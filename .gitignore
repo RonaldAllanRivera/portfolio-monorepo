@@ -1,0 +1,20 @@
+# Node
+node_modules/
+apps/web-next/.next/
+apps/web-next/.env*
+apps/web-next/out/
+
+# PHP/Laravel
+apps/admin-laravel/vendor/
+apps/admin-laravel/node_modules/
+apps/admin-laravel/.env*
+# Do not commit uploaded media
+apps/admin-laravel/storage/app/public/**
+apps/admin-laravel/public/storage/**
+apps/admin-laravel/public/uploads/**
+# Keep the storage/.gitignore files themselves if present
+!apps/admin-laravel/storage/**/.gitignore
+
+# OS
+.DS_Store
+Thumbs.db
