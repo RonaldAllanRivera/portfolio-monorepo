@@ -120,14 +120,26 @@ class ExperienceResource extends Resource
 
                 Fieldset::make('Skills')
                     ->schema([
-                        Forms\Components\TagsInput::make('skills')
+                        Forms\Components\Select::make('skills')
                             ->label('Skills')
-                            ->placeholder('Add skills (press Enter after each)')
-                            ->helperText('Add relevant skills you used or developed in this role')
-                            ->suggestions([
-                                'Laravel', 'PHP', 'JavaScript', 'React', 'Vue.js', 'Next.js',
-                                'TypeScript', 'Node.js', 'MySQL', 'PostgreSQL', 'MongoDB',
-                                'AWS', 'Docker', 'Git', 'REST API', 'GraphQL', 'TailwindCSS',
+                            ->relationship('skills', 'name')
+                            ->multiple()
+                            ->searchable()
+                            ->preload()
+                            ->native(false)
+                            ->helperText('Search and select skills. Type a new name to create it quickly.')
+                            ->createOptionForm([
+                                Forms\Components\TextInput::make('name')
+                                    ->label('Name')
+                                    ->required()
+                                    ->maxLength(255),
+                                Forms\Components\TextInput::make('category')
+                                    ->label('Category')
+                                    ->maxLength(255),
+                                Forms\Components\TextInput::make('sort_order')
+                                    ->numeric()
+                                    ->default(0)
+                                    ->label('Sort order'),
                             ])
                             ->columnSpanFull(),
                     ]),

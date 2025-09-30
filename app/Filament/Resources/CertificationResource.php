@@ -2,8 +2,8 @@
 
 namespace App\Filament\Resources;
 
-use App\Filament\Resources\EducationResource\Pages;
-use App\Models\Education;
+use App\Filament\Resources\CertificationResource\Pages;
+use App\Models\Certification;
 use Filament\Actions;
 use Filament\Forms;
 use Filament\Schemas\Schema;
@@ -12,14 +12,14 @@ use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Table;
 use Filament\Support\Enums\FontWeight;
-use UnitEnum;
 use BackedEnum;
+use UnitEnum;
 
-class EducationResource extends Resource
+class CertificationResource extends Resource
 {
-    protected static ?string $model = Education::class;
+    protected static ?string $model = Certification::class;
 
-    protected static BackedEnum|string|null $navigationIcon = 'heroicon-o-academic-cap';
+    protected static BackedEnum|string|null $navigationIcon = 'heroicon-o-check-badge';
 
     protected static UnitEnum|string|null $navigationGroup = 'Portfolio';
 
@@ -31,70 +31,66 @@ class EducationResource extends Resource
                     ->default(auth()->id())
                     ->required(),
 
-                Fieldset::make('School Details')
+                Fieldset::make('Certification Details')
                     ->schema([
-                        Forms\Components\TextInput::make('school')
-                            ->label('School')
+                        Forms\Components\TextInput::make('name')
+                            ->label('Name')
                             ->required()
                             ->maxLength(255)
-                            ->placeholder('e.g., University of the Philippines'),
+                            ->placeholder('e.g., AWS Certified Solutions Architect – Associate'),
 
-                        Forms\Components\TextInput::make('degree')
-                            ->label('Degree')
-                            ->maxLength(255)
-                            ->placeholder('e.g., Bachelor of Science'),
-
-                        Forms\Components\TextInput::make('field_of_study')
-                            ->label('Field of study')
-                            ->maxLength(255)
-                            ->placeholder('e.g., Computer Science'),
-                    ])
-                    ->columns(3),
-
-                Fieldset::make('Duration')
-                    ->schema([
-                        Forms\Components\Toggle::make('is_current')
-                            ->label('Currently studying (or expected)')
-                            ->reactive()
-                            ->afterStateUpdated(fn ($state, callable $set) => $state ? $set('end_date', null) : null),
-
-                        Forms\Components\DatePicker::make('start_date')
-                            ->label('Start date')
-                            ->required()
+                        Forms\Components\Select::make('organization_id')
+                            ->label('Issuing Organization')
+                            ->relationship('organization', 'name')
+                            ->searchable()
+                            ->preload()
                             ->native(false)
-                            ->displayFormat('M Y')
-                            ->maxDate(now()),
-
-                        Forms\Components\DatePicker::make('end_date')
-                            ->label('End date (or expected)')
-                            ->native(false)
-                            ->displayFormat('M Y')
-                            ->maxDate(now())
-                            ->hidden(fn (callable $get) => $get('is_current')),
-                    ])
-                    ->columns(3),
-
-                Fieldset::make('Academics & Activities')
-                    ->schema([
-                        Forms\Components\TextInput::make('grade')
-                            ->label('Grade')
-                            ->maxLength(100),
-
-                        Forms\Components\Textarea::make('activities_and_societies')
-                            ->label('Activities and societies')
-                            ->rows(3)
-                            ->placeholder('e.g., Programming Club, ACM, Hackathons'),
+                            ->createOptionForm([
+                                Forms\Components\TextInput::make('name')
+                                    ->label('Name')
+                                    ->required()
+                                    ->maxLength(255),
+                                Forms\Components\TextInput::make('website')
+                                    ->label('Website URL')
+                                    ->url()
+                                    ->maxLength(255),
+                                Forms\Components\TextInput::make('sort_order')
+                                    ->numeric()
+                                    ->default(0)
+                                    ->label('Sort order'),
+                            ])
+                            ->helperText('Examples: LinkedIn, Udemy, Microsoft, AWS, NVIDIA, etc.'),
                     ])
                     ->columns(2),
 
-                Fieldset::make('Description')
+                Fieldset::make('Validity')
                     ->schema([
-                        Forms\Components\RichEditor::make('description')
-                            ->label('Description')
-                            ->placeholder('Coursework, projects, awards, thesis, and highlights...')
-                            ->toolbarButtons(['bold', 'italic', 'bulletList', 'orderedList', 'link', 'undo', 'redo'])
-                            ->columnSpanFull(),
-                    ]),
+                        Forms\Components\DatePicker::make('issue_date')
+                            ->label('Issue date')
+                            ->native(false)
+                            ->displayFormat('M d, Y')
+                            ->maxDate(now()),
+
+                        Forms\Components\DatePicker::make('expiration_date')
+                            ->label('Expiration date')
+                            ->native(false)
+                            ->displayFormat('M d, Y')
+                            ->helperText('Leave empty if this certification does not expire.'),
+                    ])
+                    ->columns(2),
+
+                Fieldset::make('Credentials')
+                    ->schema([
+                        Forms\Components\TextInput::make('credential_id')
+                            ->label('Credential ID')
+                            ->maxLength(255),
+
+                        Forms\Components\TextInput::make('credential_url')
+                            ->label('Credential URL')
+                            ->url()
+                            ->maxLength(2048),
+                    ])
+                    ->columns(2),
 
                 Fieldset::make('Skills')
                     ->schema([
@@ -131,10 +127,10 @@ class EducationResource extends Resource
                             ->imageEditor()
                             ->imageEditorAspectRatios(['16:9', '4:3', '1:1'])
                             ->disk('public')
-                            ->directory('educations/media')
+                            ->directory('certifications/media')
                             ->visibility('public')
                             ->maxSize(5120)
-                            ->helperText('Add media like images, documents, sites or presentations (max 5MB each).')
+                            ->helperText('Add images, documents, sites or presentations (max 5MB each).')
                             ->columnSpanFull(),
                     ]),
 
@@ -153,44 +149,27 @@ class EducationResource extends Resource
     {
         return $table
             ->columns([
-                Tables\Columns\TextColumn::make('school')
-                    ->label('School')
+                Tables\Columns\TextColumn::make('name')
+                    ->label('Name')
                     ->searchable()
                     ->sortable()
                     ->weight(FontWeight::Bold),
 
-                Tables\Columns\TextColumn::make('degree')
-                    ->label('Degree')
+                Tables\Columns\TextColumn::make('organization.name')
+                    ->label('Organization')
                     ->searchable()
                     ->sortable(),
 
-                Tables\Columns\TextColumn::make('field_of_study')
-                    ->label('Field of Study')
-                    ->searchable()
-                    ->toggleable(),
-
-                Tables\Columns\TextColumn::make('start_date')
-                    ->label('Start')
-                    ->date('M Y')
+                Tables\Columns\TextColumn::make('issue_date')
+                    ->label('Issued')
+                    ->date('M d, Y')
                     ->sortable(),
 
-                Tables\Columns\TextColumn::make('end_date')
-                    ->label('End')
-                    ->date('M Y')
-                    ->placeholder('Present')
+                Tables\Columns\TextColumn::make('expiration_date')
+                    ->label('Expires')
+                    ->date('M d, Y')
+                    ->placeholder('—')
                     ->sortable(),
-
-                Tables\Columns\IconColumn::make('is_current')
-                    ->label('Current')
-                    ->boolean()
-                    ->trueIcon('heroicon-o-check-circle')
-                    ->falseIcon('heroicon-o-x-circle')
-                    ->trueColor('success')
-                    ->falseColor('gray'),
-
-                Tables\Columns\TextColumn::make('grade')
-                    ->label('Grade')
-                    ->toggleable(),
 
                 Tables\Columns\TextColumn::make('sort_order')
                     ->label('Order')
@@ -204,13 +183,7 @@ class EducationResource extends Resource
                     ->toggleable(isToggledHiddenByDefault: true),
             ])
             ->defaultSort('sort_order', 'asc')
-            ->filters([
-                Tables\Filters\TernaryFilter::make('is_current')
-                    ->label('Currently studying')
-                    ->placeholder('All')
-                    ->trueLabel('Current only')
-                    ->falseLabel('Completed only'),
-            ])
+            ->filters([])
             ->actions([
                 Actions\EditAction::make(),
                 Actions\DeleteAction::make(),
@@ -219,8 +192,7 @@ class EducationResource extends Resource
                 Actions\BulkActionGroup::make([
                     Actions\DeleteBulkAction::make(),
                 ]),
-            ])
-            ->reorderable('sort_order');
+            ]);
     }
 
     public static function getRelations(): array
@@ -231,9 +203,9 @@ class EducationResource extends Resource
     public static function getPages(): array
     {
         return [
-            'index' => Pages\ListEducations::route('/'),
-            'create' => Pages\CreateEducation::route('/create'),
-            'edit' => Pages\EditEducation::route('/{record}/edit'),
+            'index' => Pages\ListCertifications::route('/'),
+            'create' => Pages\CreateCertification::route('/create'),
+            'edit' => Pages\EditCertification::route('/{record}/edit'),
         ];
     }
 

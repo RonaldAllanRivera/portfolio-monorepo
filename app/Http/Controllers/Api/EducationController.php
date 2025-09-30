@@ -14,7 +14,7 @@ class EducationController extends Controller
      */
     public function index(): JsonResponse
     {
-        $educations = Education::with('user:id,name')
+        $educations = Education::with(['user:id,name', 'skills:id,name'])
             ->ordered()
             ->get()
             ->map(function ($education) {
@@ -32,7 +32,7 @@ class EducationController extends Controller
      */
     public function show(int $id): JsonResponse
     {
-        $education = Education::with('user:id,name')->find($id);
+        $education = Education::with(['user:id,name', 'skills:id,name'])->find($id);
 
         if (!$education) {
             return response()->json([
@@ -52,7 +52,7 @@ class EducationController extends Controller
      */
     public function current(): JsonResponse
     {
-        $educations = Education::with('user:id,name')
+        $educations = Education::with(['user:id,name', 'skills:id,name'])
             ->current()
             ->ordered()
             ->get()
@@ -85,7 +85,7 @@ class EducationController extends Controller
             'grade' => $education->grade,
             'activities_and_societies' => $education->activities_and_societies,
             'description' => $education->description,
-            'skills' => $education->skills ?? [],
+            'skills' => $education->skills?->pluck('name')->values() ?? [],
             'media' => $this->formatMedia($education->media),
             'sort_order' => $education->sort_order,
             'created_at' => $education->created_at?->toIso8601String(),

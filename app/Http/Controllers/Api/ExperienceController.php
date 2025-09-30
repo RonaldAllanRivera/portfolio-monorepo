@@ -14,7 +14,7 @@ class ExperienceController extends Controller
      */
     public function index(): JsonResponse
     {
-        $experiences = Experience::with('user:id,name')
+        $experiences = Experience::with(['user:id,name', 'skills:id,name'])
             ->ordered()
             ->get()
             ->map(function ($experience) {
@@ -32,7 +32,7 @@ class ExperienceController extends Controller
      */
     public function show(int $id): JsonResponse
     {
-        $experience = Experience::with('user:id,name')->find($id);
+        $experience = Experience::with(['user:id,name', 'skills:id,name'])->find($id);
 
         if (!$experience) {
             return response()->json([
@@ -52,7 +52,7 @@ class ExperienceController extends Controller
      */
     public function current(): JsonResponse
     {
-        $experiences = Experience::with('user:id,name')
+        $experiences = Experience::with(['user:id,name', 'skills:id,name'])
             ->current()
             ->ordered()
             ->get()
@@ -86,7 +86,7 @@ class ExperienceController extends Controller
             'location_type' => $experience->location_type,
             'description' => $experience->description,
             'profile_headline' => $experience->profile_headline,
-            'skills' => $experience->skills ?? [],
+            'skills' => $experience->skills?->pluck('name')->values() ?? [],
             'media' => $this->formatMedia($experience->media),
             'sort_order' => $experience->sort_order,
             'created_at' => $experience->created_at?->toIso8601String(),
