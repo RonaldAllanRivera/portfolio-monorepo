@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\Api\ExperienceController;
+use App\Http\Controllers\Api\EducationController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -20,4 +21,9 @@ Route::prefix('v1')->group(function () {
     Route::get('/experiences', [ExperienceController::class, 'index']);
     Route::get('/experiences/current', [ExperienceController::class, 'current']);
     Route::get('/experiences/{id}', [ExperienceController::class, 'show']);
+
+    // Educations
+    Route::get('/educations', [EducationController::class, 'index']);
+    Route::get('/educations/current', [EducationController::class, 'current']);
+    Route::get('/educations/{id}', [EducationController::class, 'show']);
 });
