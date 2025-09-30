@@ -33,8 +33,7 @@ return new class extends Migration
             $table->text('description')->nullable();
             $table->string('profile_headline')->nullable();
             
-            // Skills (JSON array)
-            $table->json('skills')->nullable();
+            // Skills are stored via experience_skill pivot
             
             // Media (JSON array of file paths/URLs)
             $table->json('media')->nullable();

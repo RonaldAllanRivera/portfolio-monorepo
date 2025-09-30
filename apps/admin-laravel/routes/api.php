@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\Api\ExperienceController;
 use App\Http\Controllers\Api\EducationController;
+use App\Http\Controllers\Api\CertificationController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -26,4 +27,9 @@ Route::prefix('v1')->group(function () {
     Route::get('/educations', [EducationController::class, 'index']);
     Route::get('/educations/current', [EducationController::class, 'current']);
     Route::get('/educations/{id}', [EducationController::class, 'show']);
+
+    // Certifications
+    Route::get('/certifications', [CertificationController::class, 'index']);
+    Route::get('/certifications/current', [CertificationController::class, 'current']);
+    Route::get('/certifications/{id}', [CertificationController::class, 'show']);
 });

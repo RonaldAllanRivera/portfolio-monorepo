@@ -5,7 +5,7 @@ A modern, API‑driven portfolio platform built as a monorepo. The admin app (La
 ## At a glance
 
 - **Filament 4‑native** resources using Schemas and unified Actions
-- **Experience module** with rich CRUD, media upload, skills tagging, and drag‑and‑drop ordering
+- **Experience, Education, and Certifications modules** with rich CRUD, media upload, skills taxonomy, and drag‑and‑drop ordering
 - **Clean REST API** consumed by the Next.js site
 - **Production‑ready** storage, caching, and CORS guidance
 - **Developer DX**: clear local setup, documented vhosts, and quick cache commands
@@ -16,7 +16,7 @@ flowchart LR
   A <-- Storage (public disk) --> S[(Uploads)]
 ```
 
-The admin lives on a subdomain in production (`https://admin.allanwebdesign.com`). The public site is deployed separately (Render or similar) at `https://www.allanwebdesign.com`.
+The admin lives on the main domain in production (`https://allanwebdesign.com`). The public site is deployed on Vercel at `https://ronaldallanrivera.com` for maximum speed and professional presentation.
 
 ## Table of Contents
 
@@ -28,11 +28,19 @@ The admin lives on a subdomain in production (`https://admin.allanwebdesign.com`
   - [2) Apache vhosts (Laragon)](#2-apache-vhosts-laragon)
   - [3) Admin app (Laravel + Filament)](#3-admin-app-laravel--filament)
 - [Experience Module (Admin)](#experience-module-admin)
+- [Education Module (Admin)](#education-module-admin)
   - [UI](#ui)
   - [Data model](#data-model)
   - [API](#api)
   - [Filament 4 decisions](#filament-4-decisions)
   - [Future me notes](#future-me-notes)
+- [API endpoints](#api-endpoints)
+- [API testing with Postman](#api-testing-with-postman)
+  - [Environment](#environment)
+  - [Collection requests](#collection-requests)
+  - [Tests](#tests)
+  - [cURL equivalents](#curl-equivalents)
+  - [Troubleshooting](#troubleshooting)
 - [4) Public app (Next.js)](#4-public-app-nextjs)
 - [Repository layout](#repository-layout)
 - [Environment variables](#environment-variables)
@@ -146,7 +154,7 @@ Media storage (local/dev and Hostinger): uses Laravel `public` disk.
   - Actions via `Filament\Actions` (`EditAction`, `DeleteAction`, `BulkActionGroup`).
   - Drag-and-drop reordering on `sort_order`.
   - Badge coloring for employment type, boolean icon for current role.
-- **Data model**: `App\Models\Experience` with JSON casts (`skills`, `media`), scopes, and `user` relation.
+- **Data model**: `App\Models\Experience` with many‑to‑many `skills` (pivot `experience_skill`), JSON `media`, scopes, and `user` relation.
 - **API**: `routes/api.php` + `App\Http\Controllers\Api\ExperienceController`
   - `GET /api/v1/experiences`
   - `GET /api/v1/experiences/current`
@@ -158,24 +166,113 @@ Media storage (local/dev and Hostinger): uses Laravel `public` disk.
 
 ### Future me notes
 
-- Clear caches after changing Filament resources:
   ```bash
   php artisan optimize:clear
+  php artisan route:list --path=api
   ```
-- If tables/actions look off, confirm imports:
-  - `use Filament\Schemas\Schema;`
-  - `use Filament\Schemas\Components\Fieldset;`
-  - `use Filament\Actions;`
-- Media paths are stored relative to `public` disk; `php artisan storage:link` must exist.
-- Local admin: `http://admin.allanwebdesign.com.2025.test/admin`.
-- When adding new resources, stick to Filament 4 namespaces (no `Tables\\Actions` or `Forms\\Form`).
+
+## Education Module (Admin)
+
+- **Location**: `apps/admin-laravel/app/Filament/Resources/EducationResource.php`
+- **UI**:
+  - Layouts via `Filament\Schemas\Components\Fieldset` (Filament 4).
+  - Actions via `Filament\Actions` (`EditAction`, `DeleteAction`, `BulkActionGroup`).
+  - Drag-and-drop reordering on `sort_order`.
+  - Boolean icon for current study; optional grade column.
+- **Data model**: `App\Models\Education` with many‑to‑many `skills` (pivot `education_skill`), JSON `media`, scopes (`current`, `ordered`), and `user` relation.
+- **API**: `routes/api.php` + `App\Http\Controllers\Api\EducationController`
+  - `GET /api/v1/educations`
+  - `GET /api/v1/educations/current`
+  - `GET /api/v1/educations/{id}`
+  - Returns formatted dates, duration, and media URLs.
+- **Filament 4 decisions**:
+  - Resource signature is `form(Schema $schema): Schema`.
+  - Navigation types match parent: `$navigationIcon` as `BackedEnum|string|null`, `$navigationGroup` as `UnitEnum|string|null`.
+
+## API endpoints
+
+- **Base URL** (local): `http://admin.allanwebdesign.com.2025.test/api/v1`
+- **Experiences** (`App\\Http\\Controllers\\Api\\ExperienceController`)
+  - `GET /experiences`
+  - `GET /experiences/current`
+  - `GET /experiences/{id}`
+- **Educations** (`App\\Http\\Controllers\\Api\\EducationController`)
+  - `GET /educations`
+  - `GET /educations/current`
+  - `GET /educations/{id}`
+
+- **Certifications** (`App\\Http\\Controllers\\Api\\CertificationController`)
+  - `GET /certifications`
+  - `GET /certifications/current`
+  - `GET /certifications/{id}`
+
+Routes file: `apps/admin-laravel/routes/api.php`.
+
+## API testing with Postman
+
+### Environment
+
+- Create environment: `Allan Portfolio Local`
+- Variables:
+  - `base_url`: `http://admin.allanwebdesign.com.2025.test`
+  - `api_base`: `{{base_url}}/api/v1`
+
+### Collection requests
+
+Create collection: `Portfolio API v1` and add requests below (add `Accept: application/json`).
+
+- **Experiences**
+  - GET `{{api_base}}/experiences`
+  - GET `{{api_base}}/experiences/current`
+  - GET `{{api_base}}/experiences/1`
+
+- ** Educations**
+  - GET `{{api_base}}/educations`
+  - GET `{{api_base}}/educations/current`
+  - GET `{{api_base}}/educations/1`
+
+### Tests
+
+Use this in the Postman Tests tab for list endpoints:
+
+```javascript
+pm.test("Status 200", () => pm.response.to.have.status(200));
+pm.test("JSON", () => pm.response.to.be.json);
+const json = pm.response.json();
+pm.test("success === true", () => json.success === true);
+pm.test("data is array", () => Array.isArray(json.data));
+```
+
+### cURL equivalents
+
+```bash
+# Experiences
+curl -H "Accept: application/json" "{{base_url}}/api/v1/experiences"
+curl -H "Accept: application/json" "{{base_url}}/api/v1/experiences/current"
+curl -H "Accept: application/json" "{{base_url}}/api/v1/experiences/1"
+
+# Educations
+curl -H "Accept: application/json" "{{base_url}}/api/v1/educations"
+curl -H "Accept: application/json" "{{base_url}}/api/v1/educations/current"
+curl -H "Accept: application/json" "{{base_url}}/api/v1/educations/1"
+```
+
+### Troubleshooting
+
+- Ensure you call endpoints with `/api/v1/...` prefix (not `/...`).
+- If media URLs 404, run `php artisan storage:link`.
+- Clear caches after adding controllers/routes:
+  ```bash
+  php artisan optimize:clear
+  php artisan route:list --path=api
+  ```
 
 ### 4) Public app (Next.js)
 
 From `apps/web-next/`:
 
 ```
-npm install
+{{ ... }}
 npm run dev
 ```
 
@@ -210,6 +307,11 @@ Next.js (`apps/web-next/.env.local`):
 NEXT_PUBLIC_API_BASE_URL=http://admin.allanwebdesign.com.2025.test
 ```
 
+**Production**:
+```
+NEXT_PUBLIC_API_BASE_URL=https://allanwebdesign.com
+```
+
 ## Git ignore for uploads
 
 Uploads are not committed to Git. At repo root `.gitignore`:
@@ -219,13 +321,46 @@ apps/admin-laravel/public/storage/**
 apps/admin-laravel/public/uploads/**
 ```
 
-## Production (high level)
+## Production Deployment
 
-- Admin (Laravel): Hostinger subdomain `admin.allanwebdesign.com` → document root to `apps/admin-laravel/public`
-- Public (Next.js): Render with Root Directory set to `apps/web-next`
-- Media: stored on Hostinger (Laravel `public` disk) initially
-- CORS: lock to public domain in production
-- CI/CD: GitHub Actions path filters to deploy each app independently (planned)
+### Architecture
+- **Admin (Laravel)**: `https://allanwebdesign.com` (Hostinger)
+  - Document root: `public_html` (Laravel's `public` folder)
+  - Serves as headless CMS with REST API
+  - Handles file uploads and media storage
+- **Public (Next.js)**: `https://ronaldallanrivera.com` (Vercel)
+  - Free tier with global CDN for maximum speed
+  - Instant loading, no wake-up delays
+  - Consumes Laravel API endpoints
+
+### Performance Strategy
+- **Portfolio site speed**: Vercel's edge network ensures fast loading worldwide
+- **Cost optimization**: $0 additional cost (Vercel free + existing Hostinger)
+- **Cross-domain handling**: API calls from `ronaldallanrivera.com` → `allanwebdesign.com`
+  - Implement response caching in Next.js to minimize API calls
+  - Configure CORS in Laravel to allow `ronaldallanrivera.com`
+
+### Deployment Steps
+1. **Laravel on Hostinger**:
+   - Deploy `apps/admin-laravel` to `public_html`
+   - Set document root to `public_html/public`
+   - Configure environment variables
+   - Run migrations via cron jobs
+
+2. **Next.js on Vercel**:
+   - Connect GitHub repository
+   - Set root directory to `apps/web-next`
+   - Add custom domain `ronaldallanrivera.com`
+   - Configure `NEXT_PUBLIC_API_BASE_URL=https://allanwebdesign.com`
+   - Vercel handles SSL and CDN automatically
+
+### CORS Configuration
+```php
+// config/cors.php
+'allowed_origins' => ['https://ronaldallanrivera.com'],
+'allowed_methods' => ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+'allowed_headers' => ['*'],
+```
 
 ## Useful commands
 

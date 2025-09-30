@@ -26,7 +26,7 @@ return new class extends Migration {
             $table->text('activities_and_societies')->nullable();
             $table->longText('description')->nullable();
 
-            $table->json('skills')->nullable();
+            // Skills are stored via education_skill pivot
             $table->json('media')->nullable();
 
             $table->integer('sort_order')->default(0);

@@ -5,6 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
 class Education extends Model
@@ -32,7 +33,6 @@ class Education extends Model
         'grade',
         'activities_and_societies',
         'description',
-        'skills',
         'media',
         'sort_order',
     ];
@@ -46,7 +46,6 @@ class Education extends Model
         'start_date' => 'date',
         'end_date' => 'date',
         'is_current' => 'boolean',
-        'skills' => 'array',
         'media' => 'array',
         'sort_order' => 'integer',
     ];
@@ -73,5 +72,13 @@ class Education extends Model
     public function scopeOrdered($query)
     {
         return $query->orderBy('sort_order')->orderByDesc('start_date');
+    }
+
+    /**
+     * Skills associated to this education.
+     */
+    public function skills(): BelongsToMany
+    {
+        return $this->belongsToMany(Skill::class)->withTimestamps();
     }
 }

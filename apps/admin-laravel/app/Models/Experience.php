@@ -5,6 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
 class Experience extends Model
@@ -28,7 +29,6 @@ class Experience extends Model
         'location_type',
         'description',
         'profile_headline',
-        'skills',
         'media',
         'sort_order',
     ];
@@ -42,7 +42,6 @@ class Experience extends Model
         'start_date' => 'date',
         'end_date' => 'date',
         'is_current' => 'boolean',
-        'skills' => 'array',
         'media' => 'array',
         'sort_order' => 'integer',
     ];
@@ -69,5 +68,13 @@ class Experience extends Model
     public function scopeOrdered($query)
     {
         return $query->orderBy('sort_order')->orderByDesc('start_date');
+    }
+
+    /**
+     * Skills used in this experience.
+     */
+    public function skills(): BelongsToMany
+    {
+        return $this->belongsToMany(Skill::class)->withTimestamps();
     }
 }

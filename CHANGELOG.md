@@ -1,8 +1,57 @@
+## [0.4.0] - 2025-09-30
+### Added
+- Certifications module in `apps/admin-laravel`:
+  - Migrations `2025_09_30_000003_create_organizations_table.php` and `2025_09_30_000004_create_certifications_table.php`.
+  - Models: `App\Models\Organization`, `App\Models\Certification` (SoftDeletes, scopes).
+  - Filament 4 Resources: `OrganizationResource`, `CertificationResource` with forms/tables.
+  - Public API endpoints (`App\Http\Controllers\Api\CertificationController`):
+    - `GET /api/v1/certifications`
+    - `GET /api/v1/certifications/current`
+    - `GET /api/v1/certifications/{id}`
+- Skills taxonomy module:
+  - Migration `2025_09_30_000005_create_skills_table.php`.
+  - Pivot tables: `certification_skill`, `experience_skill`, `education_skill`.
+  - Model: `App\Models\Skill`.
+  - Filament 4 `SkillResource` with category grouping (collapsible), category filter, and default "All" pagination.
+- Seeders:
+  - `OrganizationSeeder` (LinkedIn Learning, Udemy).
+  - `SkillSeeder` (curated categories and skills list).
+  - `CertificationSeeder` (LinkedIn Learning certifications from CSV converted to code).
+
+### Changed
+- Experience and Education now use many-to-many `skills` relations (removed JSON skills), updated Filament forms to searchable multi-select with inline create.
+- Certification, Experience, and Education API responses now return `skills` as an array of names; eager loading of `skills` in controllers.
+
+### Fixed
+- `education_skill` FK now references the correct `educations` table; added guard to drop existing table before create to recover from partial runs.
+
+### Notes
+- Skills page UX: grouped by category (collapsible) with a category filter; pagination defaults to "All" and can be adjusted.
+
 # Changelog
 
 All notable changes to this project will be documented in this file.
 
 The format is based on Keep a Changelog, and this project adheres to Semantic Versioning (where practical).
+
+## [0.3.0] - 2025-09-30
+### Added
+- Education module in `apps/admin-laravel`:
+  - Migration `2025_09_30_000002_create_educations_table.php` with fields (school, degree, field_of_study, start/end, is_current, grade, activities_and_societies, description, skills, media, sort_order).
+  - Model `App\Models\Education` with casts, SoftDeletes, scopes (`current`, `ordered`), and `user` relation.
+  - Filament 4 Resource `App\Filament\Resources\EducationResource` with Fieldset layouts, unified Actions, and reorderable table.
+  - Resource pages: List, Create, Edit.
+- Public API endpoints for Educations:
+  - `GET /api/v1/educations`
+  - `GET /api/v1/educations/current`
+  - `GET /api/v1/educations/{id}`
+
+### Changed
+- README updated with overview, Education module details, API endpoints, and Postman testing guide.
+
+### Fixed
+- Eloquent table mapping for Education model (`$table = 'educations'`) to prevent "Base table ... education doesn't exist" errors.
+
 
 ## [0.2.0] - 2025-09-30
 ### Added

@@ -14,5 +14,14 @@ class DatabaseSeeder extends Seeder
     {
         // Seed the initial Filament admin user
         $this->call(FilamentAdminSeeder::class);
+
+        // Seed default issuing organizations for certifications
+        $this->call(OrganizationSeeder::class);
+
+        // Seed curated skills grouped by categories
+        $this->call(SkillSeeder::class);
+
+        // Seed LinkedIn Learning certifications parsed from CSV into code
+        $this->call(CertificationSeeder::class);
     }
 }
