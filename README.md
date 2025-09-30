@@ -5,7 +5,7 @@ A modern, API‑driven portfolio platform built as a monorepo. The admin app (La
 ## At a glance
 
 - **Filament 4‑native** resources using Schemas and unified Actions
-- **Experience, Education, and Certifications modules** with rich CRUD, media upload, skills taxonomy, and drag‑and‑drop ordering
+- **Experience, Education, Projects, and Certifications modules** with rich CRUD, media upload, skills taxonomy, reusable links, and drag‑and‑drop ordering
 - **Clean REST API** consumed by the Next.js site
 - **Production‑ready** storage, caching, and CORS guidance
 - **Developer DX**: clear local setup, documented vhosts, and quick cache commands
@@ -164,6 +164,25 @@ Media storage (local/dev and Hostinger): uses Laravel `public` disk.
   - Resource signature is `form(Schema $schema): Schema`.
   - Navigation types match parent: `$navigationIcon` as `BackedEnum|string|null`, `$navigationGroup` as `UnitEnum|string|null`.
 
+## Projects Module (Admin)
+
+- **Location**: `apps/admin-laravel/app/Filament/Resources/ProjectResource.php`
+- **UI**:
+  - Filament 4 Schemas with fieldsets for Basic, Duration, Description, Skills, Media, Links, and Display Order
+  - Actions via `Filament\Actions` (`EditAction`, `DeleteAction`, `BulkActionGroup`)
+  - Drag-and-drop reordering on `sort_order`
+- **Data model**: `App\Models\Project`
+  - Fields: `name`, `description`, `is_current`, `start_date`, `end_date`, `media`, `sort_order`
+  - Relations: `skills` (many-to-many via `project_skill`), `links` (many-to-many via `link_project`), `experience` (belongsTo – "Associated with" current company)
+- **Links taxonomy (Admin)**: `apps/admin-laravel/app/Filament/Resources/LinkResource.php`
+  - Manage reusable links (fields: `label`, `url`, `type` such as Live/Repo/Docs/Demo/Case Study)
+  - Used by Project form via multi-select with inline create
+- **API**: `routes/api.php` + `App\Http\Controllers\Api\ProjectController`
+  - `GET /api/v1/projects`
+  - `GET /api/v1/projects/current`
+  - `GET /api/v1/projects/{id}`
+  - Returns formatted dates, duration, media URLs, related skills, links, and associated experience
+
 ### Future me notes
 
   ```bash
@@ -206,6 +225,11 @@ Media storage (local/dev and Hostinger): uses Laravel `public` disk.
   - `GET /certifications/current`
   - `GET /certifications/{id}`
 
+- **Projects** (`App\\Http\\Controllers\\Api\\ProjectController`)
+  - `GET /projects`
+  - `GET /projects/current`
+  - `GET /projects/{id}`
+
 Routes file: `apps/admin-laravel/routes/api.php`.
 
 ## API testing with Postman
@@ -231,6 +255,11 @@ Create collection: `Portfolio API v1` and add requests below (add `Accept: appli
   - GET `{{api_base}}/educations/current`
   - GET `{{api_base}}/educations/1`
 
+- ** Projects**
+  - GET `{{api_base}}/projects`
+  - GET `{{api_base}}/projects/current`
+  - GET `{{api_base}}/projects/1`
+
 ### Tests
 
 Use this in the Postman Tests tab for list endpoints:
@@ -255,6 +284,11 @@ curl -H "Accept: application/json" "{{base_url}}/api/v1/experiences/1"
 curl -H "Accept: application/json" "{{base_url}}/api/v1/educations"
 curl -H "Accept: application/json" "{{base_url}}/api/v1/educations/current"
 curl -H "Accept: application/json" "{{base_url}}/api/v1/educations/1"
+
+# Projects
+curl -H "Accept: application/json" "{{base_url}}/api/v1/projects"
+curl -H "Accept: application/json" "{{base_url}}/api/v1/projects/current"
+curl -H "Accept: application/json" "{{base_url}}/api/v1/projects/1"
 ```
 
 ### Troubleshooting
@@ -361,6 +395,21 @@ apps/admin-laravel/public/uploads/**
 'allowed_methods' => ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
 'allowed_headers' => ['*'],
 ```
+
+### Domains & DNS Strategy
+
+- **Registrar choice**: Buy/manage domains on Hostinger (often 1st year free with hosting; cheaper renewals). Avoid purchasing on Vercel (more convenient, but generally pricier and no free year).
+- **Assignments**:
+  - `allanwebdesign.com` → Hostinger (Laravel admin/API)
+  - `ronaldallanrivera.com` → Vercel (Next.js), but keep DNS on Hostinger
+- **DNS (set in Hostinger DNS Zone)**:
+  - `allanwebdesign.com` apex: A `@` → <HOSTINGER_IP>
+  - `www.allanwebdesign.com`: CNAME `www` → `@`
+  - `ronaldallanrivera.com` apex: A `@` → `76.76.21.21` (Vercel)
+  - `www.ronaldallanrivera.com`: CNAME `www` → `cname.vercel-dns.com`
+  - Vercel verification: TXT `_vercel-verification` → token provided by Vercel when adding the domain
+
+See `DEPLOYMENT_PLAN.md` for the full, step-by-step configuration.
 
 ## Useful commands
 

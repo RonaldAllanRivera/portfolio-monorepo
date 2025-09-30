@@ -3,6 +3,7 @@
 use App\Http\Controllers\Api\ExperienceController;
 use App\Http\Controllers\Api\EducationController;
 use App\Http\Controllers\Api\CertificationController;
+use App\Http\Controllers\Api\ProjectController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -32,4 +33,9 @@ Route::prefix('v1')->group(function () {
     Route::get('/certifications', [CertificationController::class, 'index']);
     Route::get('/certifications/current', [CertificationController::class, 'current']);
     Route::get('/certifications/{id}', [CertificationController::class, 'show']);
+
+    // Projects
+    Route::get('/projects', [ProjectController::class, 'index']);
+    Route::get('/projects/current', [ProjectController::class, 'current']);
+    Route::get('/projects/{id}', [ProjectController::class, 'show']);
 });

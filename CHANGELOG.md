@@ -1,3 +1,22 @@
+## [0.5.0] - 2025-09-30
+### Added
+- Projects module in `apps/admin-laravel`:
+  - Migration `2025_09_30_000009_create_projects_table.php` with fields (name, description, is_current, start/end, media, sort_order) and relations (user_id, experience_id nullable).
+  - Pivot `2025_09_30_000010_create_project_skill_table.php` for many-to-many `skills`.
+  - Model `App\Models\Project` with casts, scopes (`current`, `ordered`), and relations (`skills`, `links`, `experience`, `user`).
+  - Filament 4 `ProjectResource` with fieldsets for Basic, Duration, Description, Skills, Media, Links, and Display Order; reorderable by `sort_order`.
+- Reusable Links taxonomy:
+  - Migration `2025_09_30_000011_create_links_table.php`.
+  - Pivot `2025_09_30_000012_create_link_project_table.php`.
+  - Model `App\Models\Link` and Filament 4 `LinkResource` (Taxonomies group) with List/Create/Edit pages.
+- Public API endpoints for Projects (`App\Http\Controllers\Api\ProjectController`):
+  - `GET /api/v1/projects`
+  - `GET /api/v1/projects/current`
+  - `GET /api/v1/projects/{id}`
+
+### Changed
+- README updated with Projects module details, Links admin, API endpoints, Postman and cURL examples.
+
 ## [0.4.0] - 2025-09-30
 ### Added
 - Certifications module in `apps/admin-laravel`:
