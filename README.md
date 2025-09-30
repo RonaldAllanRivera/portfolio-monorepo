@@ -1,13 +1,53 @@
-# Allan Web Design Monorepo
+# Allan Web Design – Portfolio Platform
 
-Monorepo for a two-app portfolio system:
+A modern, API‑driven portfolio platform built as a monorepo. The admin app (Laravel 12 + Filament 4) serves as a headless CMS powering a Next.js public site, with clean REST endpoints and a streamlined content workflow.
 
-- `apps/admin-laravel/` — Laravel 12 + Filament 4 admin (headless CMS/API)
-- `apps/web-next/` — Next.js public site (SSR/ISR)
-- `infra/` — CI/CD and deployment scripts (planned)
-- `packages/shared/` — shared code and types (optional)
+## At a glance
+
+- **Filament 4‑native** resources using Schemas and unified Actions
+- **Experience module** with rich CRUD, media upload, skills tagging, and drag‑and‑drop ordering
+- **Clean REST API** consumed by the Next.js site
+- **Production‑ready** storage, caching, and CORS guidance
+- **Developer DX**: clear local setup, documented vhosts, and quick cache commands
+
+```mermaid
+flowchart LR
+  A[Admin (Laravel 12 + Filament 4)] -- REST API --> B[Public Site (Next.js)]
+  A <-- Storage (public disk) --> S[(Uploads)]
+```
 
 The admin lives on a subdomain in production (`https://admin.allanwebdesign.com`). The public site is deployed separately (Render or similar) at `https://www.allanwebdesign.com`.
+
+## Table of Contents
+
+- [Overview & Highlights](#overview--highlights)
+- [Prerequisites](#prerequisites)
+- [Local development](#local-development)
+  - [Local domains](#local-domains)
+  - [1) Hosts entries](#1-hosts-entries)
+  - [2) Apache vhosts (Laragon)](#2-apache-vhosts-laragon)
+  - [3) Admin app (Laravel + Filament)](#3-admin-app-laravel--filament)
+- [Experience Module (Admin)](#experience-module-admin)
+  - [UI](#ui)
+  - [Data model](#data-model)
+  - [API](#api)
+  - [Filament 4 decisions](#filament-4-decisions)
+  - [Future me notes](#future-me-notes)
+- [4) Public app (Next.js)](#4-public-app-nextjs)
+- [Repository layout](#repository-layout)
+- [Environment variables](#environment-variables)
+- [Git ignore for uploads](#git-ignore-for-uploads)
+- [Production (high level)](#production-high-level)
+- [Useful commands](#useful-commands)
+- [Security notes](#security-notes)
+
+## Overview & Highlights
+
+- **Admin-first CMS**: Laravel 12 + Filament 4 as a headless content system powering a Next.js site.
+- **Filament 4-native**: Uses Schemas (`Filament\\Schemas`) and unified Actions (`Filament\\Actions`) across resources.
+- **Experience module**: Rich CRUD, media uploads, skills tagging, drag-and-drop ordering, and a clean REST API.
+- **Local DX**: One-command cache clear, consistent local domains via Laragon, and documented vhosts.
+- **Production-ready**: Storage symlink, route/config caching notes, and CORS guidance for the Next.js domain.
 
 ## Prerequisites
 
@@ -97,6 +137,38 @@ php artisan filament:install
   - `FILAMENT_ADMIN_PASSWORD`
 
 Media storage (local/dev and Hostinger): uses Laravel `public` disk.
+
+## Experience Module (Admin)
+
+- **Location**: `apps/admin-laravel/app/Filament/Resources/ExperienceResource.php`
+- **UI**:
+  - Layouts via `Filament\Schemas\Components\Fieldset` (Filament 4).
+  - Actions via `Filament\Actions` (`EditAction`, `DeleteAction`, `BulkActionGroup`).
+  - Drag-and-drop reordering on `sort_order`.
+  - Badge coloring for employment type, boolean icon for current role.
+- **Data model**: `App\Models\Experience` with JSON casts (`skills`, `media`), scopes, and `user` relation.
+- **API**: `routes/api.php` + `App\Http\Controllers\Api\ExperienceController`
+  - `GET /api/v1/experiences`
+  - `GET /api/v1/experiences/current`
+  - `GET /api/v1/experiences/{id}`
+  - Returns formatted dates, duration, and media URLs.
+- **Filament 4 decisions**:
+  - Resource signature is `form(Schema $schema): Schema`.
+  - Navigation types match parent: `$navigationIcon` as `BackedEnum|string|null`, `$navigationGroup` as `UnitEnum|string|null`.
+
+### Future me notes
+
+- Clear caches after changing Filament resources:
+  ```bash
+  php artisan optimize:clear
+  ```
+- If tables/actions look off, confirm imports:
+  - `use Filament\Schemas\Schema;`
+  - `use Filament\Schemas\Components\Fieldset;`
+  - `use Filament\Actions;`
+- Media paths are stored relative to `public` disk; `php artisan storage:link` must exist.
+- Local admin: `http://admin.allanwebdesign.com.2025.test/admin`.
+- When adding new resources, stick to Filament 4 namespaces (no `Tables\\Actions` or `Forms\\Form`).
 
 ### 4) Public app (Next.js)
 
