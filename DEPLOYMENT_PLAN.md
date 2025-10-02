@@ -47,6 +47,172 @@ Notes:
 - CORS (`config/cors.php`): allow `https://ronaldallanrivera.com`.
 - Ensure document root is set to Laravel `public/`.
 
+## Namecheap Laravel Deployment Tutorial (Git Subtree Method)
+
+### Overview
+Deploy Laravel app from monorepo subdirectory (`apps/admin-laravel`) to Namecheap shared hosting using Git subtree.
+
+### Prerequisites
+- Git repository at `E:\laragon\www\allanwebdesign.com.2025\`
+- Laravel app in `apps/admin-laravel/` subdirectory
+- Namecheap cPanel with SSH access
+- Git installed on Namecheap server
+
+### Step 1: Set up Git subtree (Local)
+
+#### Initial setup
+```bash
+# Navigate to your git root
+cd E:\laragon\www\allanwebdesign.com.2025
+
+# Split the admin-laravel subdirectory into a separate branch
+git subtree split --prefix=apps/admin-laravel --branch=laravel-deploy
+
+# Push this branch to your repository
+git push origin laravel-deploy
+```
+
+#### For subsequent deployments
+```bash
+# After making changes to your Laravel app
+git add apps/admin-laravel/
+git commit -m "Update Laravel app"
+
+# Deploy to Namecheap
+git subtree push --prefix=apps/admin-laravel origin laravel-deploy
+```
+
+### Step 2: Set up Namecheap server
+
+#### Connect via SSH
+```bash
+ssh username@yourdomain.com
+```
+
+#### Clone the repository
+```bash
+# Navigate to your web directory (usually public_html or a subdomain folder)
+cd public_html
+
+# Clone the laravel-deploy branch
+git clone -b laravel-deploy your-repo-url .
+```
+
+#### Install dependencies
+```bash
+# Install Composer dependencies
+composer install --no-dev --optimize-autoloader
+
+# Generate application key
+php artisan key:generate
+
+# Run migrations
+php artisan migrate
+
+# Create storage symlink
+php artisan storage:link
+
+# Set proper permissions
+chmod -R 755 storage bootstrap/cache
+chmod -R 644 storage/logs/*.log
+```
+
+#### Configure environment
+```bash
+# Copy and configure .env file
+cp .env.example .env
+nano .env
+```
+
+Set these values:
+```
+APP_ENV=production
+APP_DEBUG=false
+APP_URL=https://yourdomain.com
+
+DB_CONNECTION=mysql
+DB_HOST=localhost
+DB_PORT=3306
+DB_DATABASE=your_database_name
+DB_USERNAME=your_database_user
+DB_PASSWORD=your_database_password
+```
+
+#### Set up cron jobs (if needed)
+```bash
+crontab -e
+```
+
+Add Laravel scheduler:
+```
+* * * * * cd /path/to/your/project && php artisan schedule:run >> /dev/null 2>&1
+```
+
+### Step 3: Update deployment workflow
+
+#### To deploy new changes
+```bash
+# On your local machine (after committing changes)
+git subtree push --prefix=apps/admin-laravel origin laravel-deploy
+
+# On Namecheap server
+git pull origin laravel-deploy
+composer install --no-dev --optimize-autoloader
+php artisan migrate
+```
+
+#### Optional: Create a deployment script
+Create `deploy.sh` on your server:
+```bash
+#!/bin/bash
+cd /path/to/your/project
+git pull origin laravel-deploy
+composer install --no-dev --optimize-autoloader
+php artisan migrate
+php artisan storage:link
+chmod -R 755 storage bootstrap/cache
+```
+
+Make it executable:
+```bash
+chmod +x deploy.sh
+```
+
+### Troubleshooting
+
+#### If subtree split fails
+```bash
+# Ensure you have committed all changes
+git status
+
+# If you have uncommitted changes, commit them first
+git add apps/admin-laravel/
+git commit -m "Prepare for deployment"
+
+# Try subtree split again
+git subtree split --prefix=apps/admin-laravel --branch=laravel-deploy
+```
+
+#### If composer install fails
+```bash
+# Increase PHP memory limit
+php -d memory_limit=-1 composer install --no-dev --optimize-autoloader
+```
+
+#### If permissions issues persist
+```bash
+# Fix ownership (if you have sudo access)
+sudo chown -R user:user .
+# Replace 'user' with your cPanel username
+```
+
+### Benefits of this approach
+- Keeps monorepo structure intact locally
+- Clean separation for deployment
+- Easy to update with single command
+- No complex server-side setup
+- Version control for deployments
+
 ## Next.js (Vercel)
 - Environment: `NEXT_PUBLIC_API_BASE_URL=https://allanwebdesign.com`
 - Use caching/revalidation to reduce API calls.
