@@ -95,4 +95,9 @@ class SkillResource extends Resource
             'edit' => Pages\EditSkill::route('/{record}/edit'),
         ];
     }
+
+    public static function getNavigationBadge(): ?string
+    {
+        return static::getModel()::count();
+    }
 }
