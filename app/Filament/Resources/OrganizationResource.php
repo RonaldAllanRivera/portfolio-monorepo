@@ -76,4 +76,9 @@ class OrganizationResource extends Resource
             'edit' => Pages\EditOrganization::route('/{record}/edit'),
         ];
     }
+
+    public static function getNavigationBadge(): ?string
+    {
+        return static::getModel()::count();
+    }
 }
