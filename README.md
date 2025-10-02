@@ -203,6 +203,7 @@ Media storage (local/dev and Hostinger): uses Laravel `public` disk.
   - Personal: date_of_birth, gender, marital_status, nationality
   - Address (structured): line1, line2, city, state, postal_code, country
   - Availability: open_to_work, hourly_rate, preferred_roles[]
+  - Appearance: active_public_template, brand_primary_color, brand_secondary_color
 - **Notes**:
   - Multiple settings records supported; ordered via `sort_order`
   - Planned API: `GET /api/v1/settings`, `GET /api/v1/settings/{id}`, optional `GET /api/v1/settings/primary`

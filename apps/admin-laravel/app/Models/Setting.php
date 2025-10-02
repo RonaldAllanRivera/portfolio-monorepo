@@ -18,6 +18,10 @@ class Setting extends Model
         'logo',
         'favicon',
         'profile_picture',
+        // Appearance
+        'active_public_template',
+        'brand_primary_color',
+        'brand_secondary_color',
         'seo_title',
         'seo_description',
         'seo_keywords',

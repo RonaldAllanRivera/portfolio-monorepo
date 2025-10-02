@@ -80,6 +80,29 @@ class SettingResource extends Resource
                     ])
                     ->columns(2),
 
+                Fieldset::make('Appearance')
+                    ->schema([
+                        Forms\Components\Select::make('active_public_template')
+                            ->label('Active Public Template')
+                            ->options(fn () => collect(config('templates.templates', []))
+                                ->mapWithKeys(fn ($tpl) => [($tpl['slug'] ?? '') => ($tpl['name'] ?? ($tpl['slug'] ?? ''))])
+                                ->all())
+                            ->native(false)
+                            ->searchable()
+                            ->helperText('Choose which public template Next.js should render.'),
+
+                        Forms\Components\ColorPicker::make('brand_primary_color')
+                            ->label('Primary Color')
+                            ->formatStateUsing(fn ($state) => $state ?: null)
+                            ->helperText('Primary brand color used by public templates.'),
+
+                        Forms\Components\ColorPicker::make('brand_secondary_color')
+                            ->label('Secondary Color')
+                            ->formatStateUsing(fn ($state) => $state ?: null)
+                            ->helperText('Secondary brand color used by public templates.'),
+                    ])
+                    ->columns(3),
+
                 Fieldset::make('SEO')
                     ->schema([
                         Forms\Components\TextInput::make('seo_title')
@@ -226,6 +249,11 @@ class SettingResource extends Resource
 
                 Tables\Columns\TextColumn::make('seo_title')
                     ->label('SEO Title')
+                    ->toggleable(),
+
+                Tables\Columns\TextColumn::make('active_public_template')
+                    ->label('Template')
+                    ->badge()
                     ->toggleable(),
 
                 Tables\Columns\TextColumn::make('contact_email')

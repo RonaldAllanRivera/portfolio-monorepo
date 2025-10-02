@@ -1,3 +1,21 @@
+## [0.7.0] - 2025-10-02
+### Added
+- Templating backend scaffolding in `apps/admin-laravel`:
+  - Config `config/templates.php` with initial templates (`classic`, `modern`).
+  - Public API endpoints:
+    - `GET /api/v1/templates`
+    - `GET /api/v1/appearance`
+    - `GET /api/v1/settings`
+    - `GET /api/v1/settings/current`
+    - `GET /api/v1/settings/{id}`
+  - Controllers: `App\Http\Controllers\Api\TemplatesController`, `AppearanceController`, `SettingController`.
+  - Migration `2025_10_02_190001_add_appearance_fields_to_settings_table.php` adding `active_public_template`, `brand_primary_color`, `brand_secondary_color` to `settings`.
+  - Filament v4 `SettingResource` updated with an "Appearance" fieldset (template select, brand primary/secondary color pickers).
+  - Routes updated in `routes/api.php`.
+
+### Changed
+- README: documented appearance fields under Settings module and listed new API endpoints (Templates, Appearance, Settings).
+
 ## [0.6.0] - 2025-10-02
 ### Added
 - Settings module in `apps/admin-laravel`:

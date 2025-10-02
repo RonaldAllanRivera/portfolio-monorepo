@@ -4,6 +4,9 @@ use App\Http\Controllers\Api\ExperienceController;
 use App\Http\Controllers\Api\EducationController;
 use App\Http\Controllers\Api\CertificationController;
 use App\Http\Controllers\Api\ProjectController;
+use App\Http\Controllers\Api\TemplatesController;
+use App\Http\Controllers\Api\AppearanceController;
+use App\Http\Controllers\Api\SettingController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -38,4 +41,15 @@ Route::prefix('v1')->group(function () {
     Route::get('/projects', [ProjectController::class, 'index']);
     Route::get('/projects/current', [ProjectController::class, 'current']);
     Route::get('/projects/{id}', [ProjectController::class, 'show']);
+
+    // Templates (public)
+    Route::get('/templates', [TemplatesController::class, 'index']);
+
+    // Appearance (public, read-only)
+    Route::get('/appearance', [AppearanceController::class, 'show']);
+
+    // Settings (public, read-only for Next.js)
+    Route::get('/settings', [SettingController::class, 'index']);
+    Route::get('/settings/current', [SettingController::class, 'current']);
+    Route::get('/settings/{id}', [SettingController::class, 'show']);
 });
