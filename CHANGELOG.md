@@ -1,3 +1,14 @@
+## [0.6.0] - 2025-10-02
+### Added
+- Settings module in `apps/admin-laravel`:
+  - Migration `2025_10_02_000013_create_settings_table.php` with fields: headline, about_me, logo, favicon, seo_title, seo_description, seo_keywords[], contact (email/phone/whatsapp), social links (GitHub/LinkedIn/Twitter/X/YouTube/Dribbble/Behance), date_of_birth, gender, marital_status, nationality, structured address (line1/line2/city/state/postal_code/country), availability (open_to_work, hourly_rate, preferred_roles[]), sort_order, user relation.
+  - Alter migration `2025_10_02_140324_add_profile_picture_to_settings_table.php` to add `profile_picture` for existing DBs; also included in the create migration for fresh installs.
+  - Model `App\Models\Setting` with casts and scopes.
+  - Filament 4 `SettingResource` with fieldsets for Profile, Media (including Profile Picture, max 800×800), SEO, Contact Info, Social Links, Personal Information, Address, Availability, and Display Order; reorderable by `sort_order`.
+
+### Changed
+- README updated with Settings module documentation and media constraints.
+
 ## [0.5.0] - 2025-09-30
 ### Added
 - Projects module in `apps/admin-laravel`:

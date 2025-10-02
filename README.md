@@ -5,7 +5,7 @@ A modern, API‑driven portfolio platform built as a monorepo. The admin app (La
 ## At a glance
 
 - **Filament 4‑native** resources using Schemas and unified Actions
-- **Experience, Education, Projects, and Certifications modules** with rich CRUD, media upload, skills taxonomy, reusable links, and drag‑and‑drop ordering
+- **Experience, Education, Projects, Certifications, and Settings modules** with rich CRUD, media upload, skills taxonomy, reusable links, and drag‑and‑drop ordering
 - **Clean REST API** consumed by the Next.js site
 - **Production‑ready** storage, caching, and CORS guidance
 - **Developer DX**: clear local setup, documented vhosts, and quick cache commands
@@ -182,6 +182,30 @@ Media storage (local/dev and Hostinger): uses Laravel `public` disk.
   - `GET /api/v1/projects/current`
   - `GET /api/v1/projects/{id}`
   - Returns formatted dates, duration, media URLs, related skills, links, and associated experience
+
+## Settings Module (Admin)
+
+- **Location**: `apps/admin-laravel/app/Filament/Resources/SettingResource.php`
+- **Model**: `apps/admin-laravel/app/Models/Setting.php`
+- **Migration**: `database/migrations/2025_10_02_000013_create_settings_table.php`
+  - Alter migration for existing DBs: `2025_10_02_140324_add_profile_picture_to_settings_table.php`
+- **UI** (Filament 4 Schemas):
+  - Fieldsets: Profile, Media, SEO, Contact Info, Social Links, Personal Information, Address, Availability, Display Order
+  - Media uploads:
+    - Logo → `public/settings/logo`
+    - Favicon → `public/settings/favicon`
+    - Profile Picture → `public/settings/profile` (square editor, max 800×800)
+- **Fields**:
+  - Headline, About Me
+  - SEO Title, SEO Description, SEO Keywords[]
+  - Contact: email, phone, WhatsApp
+  - Social: GitHub, LinkedIn, Twitter/X, YouTube, Dribbble, Behance
+  - Personal: date_of_birth, gender, marital_status, nationality
+  - Address (structured): line1, line2, city, state, postal_code, country
+  - Availability: open_to_work, hourly_rate, preferred_roles[]
+- **Notes**:
+  - Multiple settings records supported; ordered via `sort_order`
+  - Planned API: `GET /api/v1/settings`, `GET /api/v1/settings/{id}`, optional `GET /api/v1/settings/primary`
 
 ### Future me notes
 
