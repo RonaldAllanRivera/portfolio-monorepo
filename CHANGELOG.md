@@ -1,3 +1,15 @@
+## [0.7.2] - 2025-10-03
+### Added
+- Next.js dynamic template rendering:
+  - `apps/web-next/templates/registry.ts` with dynamic loader (classic, modern)
+  - Initial templates: `templates/classic/`, `templates/modern/`
+  - Types: `types/appearance.ts` (`Appearance`, `SeoMeta`, `TemplateMeta`)
+  - API client: `lib/api.ts` (`fetchAppearance`, `fetchTemplates`) using `NEXT_PUBLIC_API_BASE_URL`
+  - App Router page wiring: `app/(site)/page.tsx` resolves template via `?template=<slug>` → active template → env fallback
+
+### Changed
+- `tsconfig.json` path alias `@/*` expanded to project root to resolve imports outside `src/`.
+
 ## [0.7.1] - 2025-10-03
 ### Added
 - Next.js public app stabilization in `apps/web-next` (App Router):

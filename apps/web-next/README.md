@@ -65,3 +65,10 @@ Check out our [Next.js deployment documentation](https://nextjs.org/docs/pages/b
   - Error: “The default export is not a React Component in "/page"”
     - Ensure `app/layout.tsx` exists and `app/(site)/page.tsx` has a default React component export.
 
+- **Dynamic templates & preview**
+  - Templates live under `templates/<slug>/` and are registered in `templates/registry.ts`.
+  - The page `app/(site)/page.tsx` chooses the template by:
+    1. `?template=<slug>` (preview)
+    2. `appearance.active_public_template` from the API
+    3. `NEXT_PUBLIC_ACTIVE_TEMPLATE` (env fallback)
+
