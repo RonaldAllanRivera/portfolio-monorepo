@@ -1,0 +1,19 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --brand-primary: #111827; /* fallback */
+  --brand-secondary: #6b7280; /* fallback */
+}
+
+html, body {
+  height: 100%;
+}
+
+/* Optional base typography tweaks */
+@layer base {
+  body {
+    @apply antialiased text-gray-900 bg-white;
+  }
+}

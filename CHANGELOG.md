@@ -1,3 +1,17 @@
+## [0.7.3] - 2025-10-03
+### Added
+- Tailwind CSS wired globally in Next.js app:
+  - `apps/web-next/app/globals.css` with `@tailwind` directives
+  - `apps/web-next/tailwind.config.ts` scanning `app/**`, `components/**`, `templates/**`
+  - `apps/web-next/postcss.config.mjs` already configured with `@tailwindcss/postcss`
+- Brand theming via CSS variables set on `<body>` in `apps/web-next/app/layout.tsx`:
+  - `--brand-primary`, `--brand-secondary` derived from `appearance`
+
+### Changed
+- Refactored templates to Tailwind utilities:
+  - `apps/web-next/templates/classic/index.tsx`
+  - `apps/web-next/templates/modern/index.tsx`
+
 ## [0.7.2] - 2025-10-03
 ### Added
 - Next.js dynamic template rendering:
