@@ -1,4 +1,4 @@
-import type { ReactNode } from 'react';
+import type { ReactNode, CSSProperties } from 'react';
 import './globals.css';
 import { fetchAppearance } from '@/lib/api';
 
@@ -9,12 +9,13 @@ export const metadata = {
 
 export default async function RootLayout({ children }: { children: ReactNode }) {
   const appearance = await fetchAppearance().catch(() => null);
-  const style = appearance
-    ? ({
-        ['--brand-primary' as any]: appearance.brand_primary_color || '#111827',
-        ['--brand-secondary' as any]: appearance.brand_secondary_color || '#6b7280',
-      } as React.CSSProperties)
-    : undefined;
+  let style: (CSSProperties & Record<string, string>) | undefined;
+  if (appearance) {
+    style = {
+      ['--brand-primary']: appearance.brand_primary_color || '#111827',
+      ['--brand-secondary']: appearance.brand_secondary_color || '#6b7280',
+    } as CSSProperties & Record<string, string>;
+  }
 
   return (
     <html lang="en">

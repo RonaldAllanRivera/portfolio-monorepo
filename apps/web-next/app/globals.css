@@ -1,6 +1,4 @@
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
+@import "tailwindcss";
 
 :root {
   --brand-primary: #111827; /* fallback */
@@ -11,9 +9,8 @@ html, body {
   height: 100%;
 }
 
-/* Optional base typography tweaks */
-@layer base {
-  body {
-    @apply antialiased text-gray-900 bg-white;
-  }
+/* Optional base typography tweaks (no @apply in v4 example) */
+body {
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
 }

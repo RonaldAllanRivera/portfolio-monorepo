@@ -72,3 +72,12 @@ Check out our [Next.js deployment documentation](https://nextjs.org/docs/pages/b
     2. `appearance.active_public_template` from the API
     3. `NEXT_PUBLIC_ACTIVE_TEMPLATE` (env fallback)
 
+## Tailwind CSS
+
+- **Global CSS**: `app/globals.css` imports Tailwind (`@import "tailwindcss";`).
+- **Config**: `tailwind.config.ts` scans `app/**`, `components/**`, `templates/**`.
+- **PostCSS**: `postcss.config.mjs` uses `@tailwindcss/postcss`.
+- **Branding via CSS vars**: `app/layout.tsx` sets `--brand-primary` and `--brand-secondary` on `<body>` from API `appearance`.
+  - Use in templates with utilities plus inline vars, e.g. `style={{ color: 'var(--brand-primary)' }}` or gradients.
+  - Prefer Tailwind utilities for spacing, layout, and typography.
+
