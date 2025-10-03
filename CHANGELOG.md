@@ -1,3 +1,20 @@
+## [0.7.1] - 2025-10-03
+### Added
+- Next.js public app stabilization in `apps/web-next` (App Router):
+  - Created `app/layout.tsx` and `app/(site)/page.tsx` minimal shell.
+  - Added `app/api/hello/route.ts` sample route.
+- Image domains are now configurable via `.env.local` and injected into `next.config.ts`:
+  - `NEXT_PUBLIC_IMAGE_HOST_LOCAL=admin.allanwebdesign.com.2025.test`
+  - `NEXT_PUBLIC_IMAGE_HOST_PROD=allanwebdesign.com`
+  - Configured `images.remotePatterns` to allow `/storage/**` from both hosts.
+
+### Changed
+- Resolved router conflict by removing Pages Router routes at `src/pages` in favor of App Router.
+- Documentation: added `FUTURE_PLAN.md` describing cloud uploads + SaaS migration.
+
+### Notes
+- Keep `NEXT_PUBLIC_API_BASE_URL` in `.env.local` for API calls from Next.js.
+
 ## [0.7.0] - 2025-10-02
 ### Added
 - Templating backend scaffolding in `apps/admin-laravel`:
