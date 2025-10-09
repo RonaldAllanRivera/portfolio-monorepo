@@ -14,6 +14,11 @@ use Filament\Tables\Table;
 use Filament\Support\Enums\FontWeight;
 use BackedEnum;
 use UnitEnum;
+use Illuminate\Support\HtmlString;
+use Filament\Schemas\Components\Utilities\Get;
+use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Str;
+use Closure;
 
 class CertificationResource extends Resource
 {
@@ -123,15 +128,44 @@ class CertificationResource extends Resource
                         Forms\Components\FileUpload::make('media')
                             ->label('Media')
                             ->multiple()
-                            ->image()
-                            ->imageEditor()
-                            ->imageEditorAspectRatios(['16:9', '4:3', '1:1'])
+                            ->acceptedFileTypes(['image/*', 'application/pdf'])
                             ->disk('r2')
                             ->directory('certifications/media')
                             ->visibility('public')
+                            ->openable()
+                            ->downloadable()
+                            ->previewable()
                             ->maxSize(5120)
-                            ->helperText('Add images, documents, sites or presentations (max 5MB each).')
+                            ->helperText('Add images or PDFs (max 5MB each).')
                             ->columnSpanFull(),
+                    ]),
+
+                Fieldset::make('PDF Preview')
+                    ->schema([
+                        Forms\Components\Placeholder::make('pdf_previews')
+                            ->label('')
+                            ->reactive()
+                            ->columnSpanFull()
+                            ->visible(fn (Get $get): bool => collect($get('media') ?? [])
+                                ->contains(fn ($p) => Str::of((string) $p)->lower()->endsWith('.pdf')))
+                            ->content(function (Get $get): HtmlString {
+                                $urls = collect($get('media') ?? [])
+                                    ->filter(fn ($p) => Str::of((string) $p)->lower()->endsWith('.pdf'))
+                                    ->map(function ($p) {
+                                        $disk = Storage::disk('r2');
+                                        try {
+                                            return $disk->temporaryUrl($p, now()->addMinutes(15));
+                                        } catch (\Throwable $e) {
+                                            return $disk->url($p);
+                                        }
+                                    })
+                                    ->values()
+                                    ->all();
+
+                                return new HtmlString(view('filament/certifications/pdf-previews', [
+                                    'urls' => $urls,
+                                ])->render());
+                            }),
                     ]),
 
                 Fieldset::make('Display Order')

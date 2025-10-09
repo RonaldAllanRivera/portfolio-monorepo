@@ -1,3 +1,24 @@
+## [0.8.1] - 2025-10-10
+### Added
+- PDF preview functionality in Certification edit form:
+  - Added embedded PDF viewer with iframe support
+  - Temporary signed URLs for secure previews
+  - Fallback to direct URLs when signed URLs aren't available
+- R2 configuration for Cloudflare CDN with custom domain support
+
+### Changed
+- Updated `CertificationResource` to use Filament v4 patterns:
+  - Replaced `Forms\\View` with `Placeholder` component for better compatibility
+  - Added proper type hints with `Filament\\Schemas\\Components\\Utilities\\Get`
+  - Improved error handling for file operations
+- Enhanced R2 disk configuration with proper CORS and visibility settings
+
+### Fixed
+- Resolved 500 errors in Certification edit form by:
+  - Fixing type mismatches in form field closures
+  - Adding proper error handling for file operations
+  - Ensuring proper URL generation for R2 storage
+
 ## [0.8.0] - 2025-10-09
 ### Added
 - Cloudflare R2 storage integration for media uploads:
