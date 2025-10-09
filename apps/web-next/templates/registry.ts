@@ -1,7 +1,8 @@
 import type { ComponentType } from 'react';
 import type { Appearance } from '@/types/appearance';
+import type { SiteContent } from '@/types/content';
 
-export type TemplateComponent = ComponentType<{ appearance: Appearance }>;
+export type TemplateComponent = ComponentType<{ appearance: Appearance; content: SiteContent }>;
 
 export const registry: Record<string, () => Promise<{ default: TemplateComponent }>> = {
   classic: () => import('./classic'),
