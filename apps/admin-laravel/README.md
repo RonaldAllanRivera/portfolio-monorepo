@@ -44,6 +44,113 @@ We would like to extend our thanks to the following sponsors for funding Laravel
 - **[Redberry](https://redberry.international/laravel-development)**
 - **[Active Logic](https://activelogic.com)**
 
+## Cloudflare R2 File Storage Setup
+
+This application uses Cloudflare R2 for file storage. Follow these steps to set it up:
+
+### 1. Prerequisites
+- Cloudflare account with R2 enabled
+- AWS SDK for PHP (already included in composer.json)
+
+### 2. Cloudflare R2 Setup
+
+1. **Create an R2 Bucket**
+   - Log in to [Cloudflare Dashboard](https://dash.cloudflare.com)
+   - Navigate to R2 → Create Bucket
+   - Enter a unique bucket name (e.g., `your-app-uploads`)
+   - Choose a region closest to your users
+
+2. **Create API Token**
+   - Go to Profile → API Tokens
+   - Click "Create Token"
+   - Use the "Edit Cloudflare Workers" template
+   - Add these permissions:
+     - Account: R2:Read, R2:Write
+     - Zone: (select your domain)
+   - Copy the generated token (you won't see it again)
+
+3. **Get Account ID**
+   - Go to R2 dashboard
+   - Find your Account ID in the URL or dashboard
+
+### 3. Configuration
+
+1. **Install Required Package**
+   ```bash
+   composer require league/flysystem-aws-s3-v3
+   ```
+
+2. **Update `.env`**
+   ```ini
+   FILESYSTEM_DISK=r2
+   
+   # Cloudflare R2 Configuration
+   AWS_ACCESS_KEY_ID=your_access_key_id
+   AWS_SECRET_ACCESS_KEY=your_secret_access_key
+   AWS_DEFAULT_REGION=auto
+   AWS_BUCKET=your-bucket-name
+   AWS_ENDPOINT=https://your-account-id.r2.cloudflarestorage.com
+   AWS_URL=https://your-bucket.r2.dev
+   AWS_USE_PATH_STYLE_ENDPOINT=true
+   ```
+
+3. **Custom Domain (Option B - Recommended)**
+
+   Bind a custom domain under your Cloudflare zone (e.g., `cdn.allanwebdesign.com`) to your R2 bucket for cleaner, cacheable URLs.
+
+   Steps:
+   - In Cloudflare Dashboard → R2 → Your Bucket → Public access: enable.
+   - R2 → Your Bucket → Custom domains → Add `cdn.allanwebdesign.com` and follow the DNS instruction.
+   - After DNS propagates, set in your `.env`:
+     ```ini
+     AWS_URL=https://cdn.allanwebdesign.com
+     ```
+   - This makes `Storage::disk('r2')->url('path/to/file.jpg')` return `https://cdn.allanwebdesign.com/path/to/file.jpg`.
+
+   Next.js (web app) must allow the CDN domain in `images.remotePatterns`. A default has been added to include `cdn.allanwebdesign.com`. You can override the hostname via `NEXT_PUBLIC_CDN_HOST`.
+
+3. **Configure CORS**
+   In your R2 bucket settings, add this CORS configuration:
+   ```json
+   [
+     {
+       "AllowedOrigins": ["*"],
+       "AllowedMethods": ["GET", "PUT", "POST", "DELETE"],
+       "AllowedHeaders": ["*"],
+       "MaxAgeSeconds": 3000
+     }
+   ]
+   ```
+
+### 4. Migration from Local Storage
+
+To migrate existing files to R2:
+
+1. **Backup existing files**
+   ```bash
+   php artisan storage:link
+   cp -r storage/app/public storage/backup_$(date +%Y%m%d)
+   ```
+
+2. **Test Upload**
+   ```php
+   // In tinker or a test route
+   Storage::disk('r2')->put('test.txt', 'Hello R2!');
+   echo Storage::disk('r2')->url('test.txt');
+   ```
+
+   If you see errors like "Unable to check existence" or S3 driver errors, ensure the S3 adapter is installed:
+   ```bash
+   composer require league/flysystem-aws-s3-v3
+   php artisan config:clear
+   ```
+
+### 5. Troubleshooting
+
+- **403 Forbidden**: Verify your API token has correct permissions
+- **404 Not Found**: Check if the bucket name is correct
+- **Slow Uploads**: Verify your region is optimal for your users
+
 ## Contributing
 
 Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).

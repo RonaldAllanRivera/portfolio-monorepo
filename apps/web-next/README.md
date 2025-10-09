@@ -58,6 +58,9 @@ Check out our [Next.js deployment documentation](https://nextjs.org/docs/pages/b
   - Configured in `next.config.ts` using env-driven hosts:
     - Local: `http://admin.allanwebdesign.com.2025.test/storage/**`
     - Prod: `https://allanwebdesign.com/storage/**`
+  - CDN (Cloudflare R2): `https://cdn.allanwebdesign.com/**`
+    - Set `NEXT_PUBLIC_CDN_HOST=cdn.allanwebdesign.com` in `.env.local` or project env.
+    - `next.config.ts` reads this env and allows the CDN domain in `images.remotePatterns`.
 
 - **Troubleshooting**
   - Error: “App Router and Pages Router both match path: /”

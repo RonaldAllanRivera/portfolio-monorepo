@@ -130,7 +130,7 @@ class EducationResource extends Resource
                             ->image()
                             ->imageEditor()
                             ->imageEditorAspectRatios(['16:9', '4:3', '1:1'])
-                            ->disk('public')
+                            ->disk('r2')
                             ->directory('educations/media')
                             ->visibility('public')
                             ->maxSize(5120)

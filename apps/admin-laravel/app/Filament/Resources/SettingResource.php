@@ -53,7 +53,7 @@ class SettingResource extends Resource
                             ->image()
                             ->imageEditor()
                             ->imageEditorAspectRatios(['1:1', '4:3', '16:9'])
-                            ->disk('public')
+                            ->disk('r2')
                             ->directory('settings/logo')
                             ->visibility('public')
                             ->maxSize(4096),
@@ -61,7 +61,7 @@ class SettingResource extends Resource
                         Forms\Components\FileUpload::make('favicon')
                             ->label('Upload Favicon')
                             ->image()
-                            ->disk('public')
+                            ->disk('r2')
                             ->directory('settings/favicon')
                             ->visibility('public')
                             ->maxSize(1024),
@@ -73,7 +73,7 @@ class SettingResource extends Resource
                             ->imageEditorAspectRatios(['1:1'])
                             ->rules(['image', 'dimensions:max_width=800,max_height=800'])
                             ->helperText('Square image. Maximum 800x800 pixels.')
-                            ->disk('public')
+                            ->disk('r2')
                             ->directory('settings/profile')
                             ->visibility('public')
                             ->maxSize(2048),

@@ -1,3 +1,23 @@
+## [0.8.0] - 2025-10-09
+### Added
+- Cloudflare R2 storage integration for media uploads:
+  - All Filament FileUpload fields now use `->disk('r2')` in `apps/admin-laravel`.
+  - API controllers build URLs with `Storage::disk('r2')->url(...)`.
+- Migration command `app:migrate-to-r2` to copy existing files from `public` to `r2` with options:
+  - `--dry-run`, `--all`, `--prefix`, `--delete-local`.
+  - Skips dotfiles and hardens existence checks.
+- Next.js `images.remotePatterns` now allow a CDN host via `NEXT_PUBLIC_CDN_HOST` (defaults to `cdn.allanwebdesign.com`).
+
+### Changed
+- `config/filesystems.php`: moved and finalized `r2` disk under `disks`.
+- Documentation:
+  - `apps/admin-laravel/README.md` updated with Option B (custom domain) instructions and `.env` example using `AWS_URL=https://cdn.allanwebdesign.com`.
+  - Root `README.md` environment variables updated to use `FILESYSTEM_DISK=r2` plus R2 variables.
+
+### Notes
+- Ensure `league/flysystem-aws-s3-v3` is installed in the admin app.
+- Set the same R2 env vars in Render/Vercel. For Next.js, add the CDN domain to `next.config.ts` or set `NEXT_PUBLIC_CDN_HOST`.
+
 ## [0.7.3] - 2025-10-03
 ### Added
 - Tailwind CSS wired globally in Next.js app:

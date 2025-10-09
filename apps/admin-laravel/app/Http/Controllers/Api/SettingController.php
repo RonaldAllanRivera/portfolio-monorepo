@@ -55,9 +55,9 @@ class SettingController extends Controller
 
     private function formatSetting(Setting $s): array
     {
-        $logoUrl = $s->logo ? url(Storage::disk('public')->url($s->logo)) : null;
-        $faviconUrl = $s->favicon ? url(Storage::disk('public')->url($s->favicon)) : null;
-        $profileUrl = $s->profile_picture ? url(Storage::disk('public')->url($s->profile_picture)) : null;
+        $logoUrl = $s->logo ? Storage::disk('r2')->url($s->logo) : null;
+        $faviconUrl = $s->favicon ? Storage::disk('r2')->url($s->favicon) : null;
+        $profileUrl = $s->profile_picture ? Storage::disk('r2')->url($s->profile_picture) : null;
 
         return [
             'id' => $s->id,

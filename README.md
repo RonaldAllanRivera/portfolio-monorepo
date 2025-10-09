@@ -13,10 +13,11 @@ A modern, API‑driven portfolio platform built as a monorepo. The admin app (La
 ```mermaid
 flowchart LR
   A[Admin (Laravel 12 + Filament 4)] -- REST API --> B[Public Site (Next.js)]
-  A <-- Storage (public disk) --> S[(Uploads)]
+  A -- S3 API --> R2[(Cloudflare R2 Bucket)]
+  B -- Images --> CDN[cdn.allanwebdesign.com]
 ```
 
-The admin lives on the main domain in production (`https://allanwebdesign.com`). The public site is deployed on Vercel at `https://ronaldallanrivera.com` for maximum speed and professional presentation.
+The admin lives on the main domain in production (`https://allanwebdesign.com`). Media uploads are stored on Cloudflare R2 and publicly served via `https://cdn.allanwebdesign.com`. The public site is deployed on Vercel at `https://ronaldallanrivera.com`.
 
 ## Table of Contents
 

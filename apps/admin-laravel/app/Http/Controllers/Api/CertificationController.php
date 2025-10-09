@@ -99,7 +99,7 @@ class CertificationController extends Controller
     }
 
     /**
-     * Build public URLs for files stored on the public disk.
+     * Build public URLs for files stored on the R2 disk.
      */
     private function formatMedia(?array $media): array
     {
@@ -110,8 +110,8 @@ class CertificationController extends Controller
         return array_map(function ($path) {
             return [
                 'path' => $path,
-                'url' => Storage::disk('public')->url($path),
-                'full_url' => url(Storage::disk('public')->url($path)),
+                'url' => Storage::disk('r2')->url($path),
+                'full_url' => Storage::disk('r2')->url($path),
             ];
         }, $media);
     }

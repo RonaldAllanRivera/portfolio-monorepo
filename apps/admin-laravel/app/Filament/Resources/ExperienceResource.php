@@ -152,7 +152,7 @@ class ExperienceResource extends Resource
                             ->image()
                             ->imageEditor()
                             ->imageEditorAspectRatios(['16:9', '4:3', '1:1'])
-                            ->disk('public')
+                            ->disk('r2')
                             ->directory('experiences/media')
                             ->visibility('public')
                             ->maxSize(5120)

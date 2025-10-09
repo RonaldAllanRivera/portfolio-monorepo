@@ -34,8 +34,8 @@ class AppearanceController extends Controller
             ]);
         }
 
-        $logoUrl = $setting->logo ? url(Storage::disk('public')->url($setting->logo)) : null;
-        $faviconUrl = $setting->favicon ? url(Storage::disk('public')->url($setting->favicon)) : null;
+        $logoUrl = $setting->logo ? Storage::disk('r2')->url($setting->logo) : null;
+        $faviconUrl = $setting->favicon ? Storage::disk('r2')->url($setting->favicon) : null;
 
         $data = [
             'active_public_template' => $setting->active_public_template ?? config('app.default_public_template', 'classic'),

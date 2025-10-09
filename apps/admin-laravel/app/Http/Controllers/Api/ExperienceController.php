@@ -106,8 +106,8 @@ class ExperienceController extends Controller
         return array_map(function ($path) {
             return [
                 'path' => $path,
-                'url' => Storage::disk('public')->url($path),
-                'full_url' => url(Storage::disk('public')->url($path)),
+                'url' => Storage::disk('r2')->url($path),
+                'full_url' => Storage::disk('r2')->url($path),
             ];
         }, $media);
     }
