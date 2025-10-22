@@ -1,3 +1,27 @@
+## [0.8.2] - 2025-10-22
+### Added
+- SEO-friendly section routes in Next.js public app:
+  - New dynamic route `apps/web-next/app/(site)/[section]/page.tsx` enabling `/experience`, `/education`, `/projects`, `/certifications`.
+- Server navigation component:
+  - Renamed `ControlsBar` → `SectionNav` and converted to a Server Component with accessible `aria-current="page"`.
+- Documentation:
+  - Added `TEST.md` with Postman collection, CDN images/CORS tutorial (Cloudflare R2 + Cloudflare Rules), and local domain setup guide.
+
+### Changed
+- Classic template serverization and URL-driven rendering:
+  - `apps/web-next/templates/classic/index.tsx` now uses `ui.sec` from route and renders sections on the server; removed client filtering.
+  - `apps/web-next/app/(site)/page.tsx` no longer passes query-based UI state.
+- Images configuration:
+  - `apps/web-next/next.config.ts` restricted to CDN-only images via `NEXT_PUBLIC_CDN_HOST`.
+- API client resiliency:
+  - `apps/web-next/lib/api.ts` `fetchAppearance()` now logs status and returns a sane default when the Appearance API is unavailable (404), avoiding runtime errors.
+
+### Fixed
+- Education API error: "Call to a member function pluck() on string" in Laravel admin
+  - `apps/admin-laravel/app/Http/Controllers/Api/EducationController.php` now uses the relation builder (`$education->skills()->pluck('name')`) to avoid attribute/relationship shadowing.
+- Frontend crash on missing Appearance API
+  - Next.js now gracefully falls back to default appearance values instead of throwing on 404.
+
 ## [0.8.1] - 2025-10-10
 ### Added
 - PDF preview functionality in Certification edit form:

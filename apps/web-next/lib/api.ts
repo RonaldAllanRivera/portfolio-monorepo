@@ -5,26 +5,57 @@ const API_BASE = process.env.NEXT_PUBLIC_API_BASE_URL || 'http://admin.allanwebd
 
 export const revalidate = 60; // seconds
 
+const DEFAULT_APPEARANCE: Appearance = {
+  active_public_template: 'classic',
+  brand_logo_url: undefined,
+  favicon_url: undefined,
+  brand_primary_color: undefined,
+  brand_secondary_color: undefined,
+  seo_meta: {
+    title: 'My Portfolio',
+    description: 'Professional portfolio and experience',
+    image_url: undefined,
+  },
+};
+
 export async function fetchAppearance(signal?: AbortSignal): Promise<Appearance> {
-  const url = `${API_BASE.replace(/\/$/, '')}/api/v1/appearance`;
-  const res = await fetch(url, { next: { revalidate }, signal });
-  if (!res.ok) throw new Error(`Appearance fetch failed: ${res.status}`);
-  const json = await res.json();
-  // API may wrap payload: { success, data } or be direct; normalize
-  const data = json?.data ?? json ?? {};
-  const appearance: Appearance = {
-    active_public_template: data.active_public_template,
-    brand_logo_url: data.brand_logo_url ?? data.logo_url ?? null,
-    favicon_url: data.favicon_url ?? null,
-    brand_primary_color: data.brand_primary_color ?? null,
-    brand_secondary_color: data.brand_secondary_color ?? null,
-    seo_meta: data.seo_meta ?? {
-      title: data.seo_title,
-      description: data.seo_description,
-      image_url: data.seo_image_url,
-    },
-  };
-  return appearance;
+  try {
+    const url = `${API_BASE.replace(/\/$/, '')}/api/v1/appearance`;
+    console.log(`Fetching appearance from: ${url}`);
+    
+    const res = await fetch(url, { 
+      next: { revalidate },
+      signal,
+      headers: {
+        'Accept': 'application/json',
+      }
+    });
+    
+    if (!res.ok) {
+      console.warn(`Appearance API returned ${res.status} ${res.statusText} for ${url}`);
+      return DEFAULT_APPEARANCE;
+    }
+    
+    const json = await res.json();
+    // API may wrap payload: { success, data } or direct; normalize
+    const data = json?.data ?? json ?? {};
+    
+    return {
+      active_public_template: data.active_public_template ?? 'classic',
+      brand_logo_url: data.brand_logo_url ?? data.logo_url ?? null,
+      favicon_url: data.favicon_url ?? null,
+      brand_primary_color: data.brand_primary_color ?? null,
+      brand_secondary_color: data.brand_secondary_color ?? null,
+      seo_meta: data.seo_meta ?? {
+        title: data.seo_title,
+        description: data.seo_description,
+        image_url: data.seo_image_url,
+      }
+    };
+  } catch (error) {
+    console.error('Error fetching appearance:', error);
+    return DEFAULT_APPEARANCE;
+  }
 }
 
 export async function fetchTemplates(signal?: AbortSignal): Promise<TemplateMeta[]> {

@@ -85,7 +85,8 @@ class EducationController extends Controller
             'grade' => $education->grade,
             'activities_and_societies' => $education->activities_and_societies,
             'description' => $education->description,
-            'skills' => $education->skills?->pluck('name')->values() ?? [],
+            // Use relation builder to avoid attribute shadowing when a 'skills' column exists
+            'skills' => $education->skills()->pluck('name')->values()->all(),
             'media' => $this->formatMedia($education->media),
             'sort_order' => $education->sort_order,
             'created_at' => $education->created_at?->toIso8601String(),

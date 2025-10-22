@@ -343,6 +343,14 @@ NEXT_PUBLIC_API_BASE_URL=http://admin.allanwebdesign.com.2025.test
 
 Open `http://allanwebdesign.com.2025.test`.
 
+#### SEO-friendly routes and server navigation
+
+- **Sections as routes**: The public site supports section URLs:
+  - `/experience`, `/education`, `/projects`, `/certifications`
+  - Implemented via `apps/web-next/app/(site)/[section]/page.tsx`
+- **Server navigation**: `SectionNav` (server component) renders accessible links and highlights the active section via `aria-current="page"`.
+- **Server-rendered template**: `templates/classic/index.tsx` renders content based on the route-provided `ui.sec` on the server (no client filtering).
+
 ## Repository layout
 
 ```
