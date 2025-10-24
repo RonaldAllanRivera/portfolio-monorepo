@@ -45,9 +45,25 @@ export type Certification = {
   image_url?: string | null;
 };
 
+export type Setting = {
+  id?: number | string;
+  headline?: string | null;
+  about_me?: string | null;
+  profile_picture_url?: string | null;
+  contact_email?: string | null;
+  contact_phone?: string | null;
+  address_city?: string | null;
+  address_country?: string | null;
+  date_of_birth?: string | null;
+  github_url?: string | null;
+  linkedin_url?: string | null;
+  website_url?: string | null;
+};
+
 export type SiteContent = {
   experiences: Experience[];
   educations: Education[];
   projects: Project[];
   certifications: Certification[];
+  settings?: Setting | null;
 };

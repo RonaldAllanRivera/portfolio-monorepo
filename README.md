@@ -6,6 +6,13 @@
   ```
   Or use `http://127.0.0.1:8000` during dev. If you use Laragon’s Apache vhost on port 80, the `:8000` suffix is not needed.
 
+#### Local R2 images note
+
+- To avoid CORS in local development, serve images from the R2 Public URL instead of the S3 API or CDN domain.
+- Admin `.env` (local): set `AWS_URL=https://pub-<id>.r2.dev`.
+- Next.js `.env.local` (local): set `NEXT_PUBLIC_CDN_HOST=pub-<id>.r2.dev`.
+- In production, switch `NEXT_PUBLIC_CDN_HOST` back to `cdn.allanwebdesign.com` and keep `AWS_URL=https://cdn.allanwebdesign.com`.
+
 # Allan Web Design – Portfolio Platform
 
 A modern, API‑driven portfolio platform built as a monorepo. The admin app (Laravel 12 + Filament 4) serves as a headless CMS powering a Next.js public site, with clean REST endpoints and a streamlined content workflow.
@@ -335,6 +342,10 @@ curl -H "Accept: application/json" "{{base_url}}/api/v1/projects/1"
   php artisan route:list --path=api
   ```
 
+- If browser blocks images with CORS on local:
+  - Use the R2 public URL in admin `.env` (`AWS_URL=https://pub-<id>.r2.dev`) and set Next.js `.env.local` `NEXT_PUBLIC_CDN_HOST=pub-<id>.r2.dev`.
+  - Keep `cdn.allanwebdesign.com` for production and add CORS headers at Cloudflare if needed.
+
 ### 4) Public app (Next.js)
 
 From `apps/web-next/`:
@@ -375,17 +386,20 @@ packages/
 Laravel (`apps/admin-laravel/.env`):
 ```
 APP_URL=http://admin.allanwebdesign.com.2025.test
-FILESYSTEM_DISK=public
+FILESYSTEM_DISK=r2
+AWS_URL=https://pub-<id>.r2.dev   # local dev: public R2 URL to avoid CORS
 ```
 
 Next.js (`apps/web-next/.env.local`):
 ```
 NEXT_PUBLIC_API_BASE_URL=http://admin.allanwebdesign.com.2025.test
+NEXT_PUBLIC_CDN_HOST=pub-<id>.r2.dev   # local dev: same host allowed by next.config.ts
 ```
 
 **Production**:
 ```
 NEXT_PUBLIC_API_BASE_URL=https://allanwebdesign.com
+NEXT_PUBLIC_CDN_HOST=cdn.allanwebdesign.com
 ```
 
 ## Git ignore for uploads

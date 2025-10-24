@@ -1,3 +1,16 @@
+## [0.8.4] - 2025-10-24
+### Added
+- Next.js: new About section component `apps/web-next/templates/classic/components/About.tsx`.
+- Types: expanded `Setting` shape used by the About section and header.
+
+### Changed
+- Classic template renders the About section and wires section navigation (`SectionNav`) including About and All links.
+- Section routes (`apps/web-next/app/(site)/[section]/page.tsx`) map friendly paths to section keys and sort experiences by most recent.
+- API client tweaks in `apps/web-next/lib/api.ts` to normalize appearance payload and keep safe defaults.
+
+### Documentation
+- README: added local-dev guidance for R2 images — use the R2 Public URL in Laravel `.env` (`AWS_URL=https://pub-<id>.r2.dev`) and set `NEXT_PUBLIC_CDN_HOST` to the same host for Next.js. Keep `cdn.allanwebdesign.com` for production.
+
 ## [0.8.3] - 2025-10-24
 ### Changed
 - Next.js: deduplicated Appearance API calls by introducing a cached `getAppearance()` wrapper around `fetchAppearance()` using React `cache()`.

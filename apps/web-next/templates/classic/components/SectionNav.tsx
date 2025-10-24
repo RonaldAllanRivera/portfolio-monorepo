@@ -1,10 +1,11 @@
 import React from 'react';
 import Link from 'next/link';
 
-export type SecKey = 'xp' | 'ed' | 'pr' | 'cf' | undefined;
+export type SecKey = 'ab' | 'xp' | 'ed' | 'pr' | 'cf' | undefined;
 
 const links: Array<{ key: SecKey; href: string; label: string }> = [
   { key: undefined, href: '/', label: 'All' },
+  { key: 'ab', href: '/about', label: 'About' },
   { key: 'xp', href: '/experience', label: 'Experience' },
   { key: 'ed', href: '/education', label: 'Education' },
   { key: 'pr', href: '/projects', label: 'Projects' },

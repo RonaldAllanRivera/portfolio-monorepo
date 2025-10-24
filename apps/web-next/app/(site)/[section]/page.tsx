@@ -10,8 +10,10 @@ type Params = { section?: string };
 
 type SearchParams = { template?: string };
 
-function toSecKey(section?: string): 'xp' | 'ed' | 'pr' | 'cf' | undefined {
+function toSecKey(section?: string): 'ab' | 'xp' | 'ed' | 'pr' | 'cf' | undefined {
   switch ((section || '').toLowerCase()) {
+    case 'about':
+      return 'ab';
     case 'experience':
       return 'xp';
     case 'education':

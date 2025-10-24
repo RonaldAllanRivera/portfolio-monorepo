@@ -8,6 +8,7 @@ import ExperienceList from './components/ExperienceList';
 import EducationList from './components/EducationList';
 import ProjectsGrid from './components/ProjectsGrid';
 import CertificationsList from './components/CertificationsList';
+import About from './components/About';
 
 export default function Classic({ appearance, content, ui }: { appearance: Appearance; content: SiteContent; ui?: { q?: string | null; sec?: string | null } }) {
   function matches(hay: unknown, needle: string): boolean {
@@ -16,10 +17,11 @@ export default function Classic({ appearance, content, ui }: { appearance: Appea
     return s.includes(needle.toLowerCase());
   }
   const q = (ui?.q ?? '').trim();
-  const secKeys = (ui?.sec ?? 'xp,ed,pr,cf').split(',').filter(Boolean);
-  const activeSec: 'xp' | 'ed' | 'pr' | 'cf' | undefined =
-    ui?.sec === 'xp' || ui?.sec === 'ed' || ui?.sec === 'pr' || ui?.sec === 'cf' ? (ui?.sec as any) : undefined;
+  const secKeys = (ui?.sec ?? 'ab,xp,ed,pr,cf').split(',').filter(Boolean);
+  const activeSec: 'ab' | 'xp' | 'ed' | 'pr' | 'cf' | undefined =
+    ui?.sec === 'ab' || ui?.sec === 'xp' || ui?.sec === 'ed' || ui?.sec === 'pr' || ui?.sec === 'cf' ? (ui?.sec as any) : undefined;
   const sections = {
+    ab: secKeys.includes('ab'),
     xp: secKeys.includes('xp'),
     ed: secKeys.includes('ed'),
     pr: secKeys.includes('pr'),
@@ -47,11 +49,15 @@ export default function Classic({ appearance, content, ui }: { appearance: Appea
   );
 
   const logo = appearance.brand_logo_url || null;
+  const setting = content.settings || null;
 
   return (
     <main className="mx-auto max-w-4xl p-6 space-y-10">
       <SectionNav activeSec={activeSec} />
       <Header logo={logo} />
+
+      {/* About */}
+      {sections.ab ? <About setting={setting || undefined} /> : null}
 
       {/* Experience */}
       {sections.xp ? <ExperienceList items={experiences} /> : null}

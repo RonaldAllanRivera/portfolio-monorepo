@@ -1,5 +1,5 @@
 import type { Appearance, TemplateMeta } from '@/types/appearance';
-import type { Experience, Education, Project, Certification, SiteContent } from '@/types/content';
+import type { Experience, Education, Project, Certification, SiteContent, Setting } from '@/types/content';
 import { cache } from 'react';
 
 const API_BASE = String(process.env.NEXT_PUBLIC_API_BASE_URL || '');
@@ -112,13 +112,38 @@ export async function fetchCertifications(signal?: AbortSignal): Promise<Certifi
   return normalizeList<Certification>(await res.json());
 }
 
+export async function fetchSettings(signal?: AbortSignal): Promise<Setting | null> {
+  const url = `${API_BASE.replace(/\/$/, '')}/api/v1/settings/current`;
+  const res = await fetch(url, { next: { revalidate }, signal, headers: { 'Accept': 'application/json' } });
+  if (!res.ok) return null;
+  const json = await res.json();
+  const data = json?.data ?? json ?? null;
+  if (!data) return null;
+  const s: Setting = {
+    id: data.id,
+    headline: data.headline ?? null,
+    about_me: data.about_me ?? null,
+    profile_picture_url: data.profile_picture_url ?? null,
+    contact_email: data.contact_email ?? null,
+    contact_phone: data.contact_phone ?? null,
+    address_city: data.address_city ?? null,
+    address_country: data.address_country ?? null,
+    date_of_birth: data.date_of_birth ?? null,
+    github_url: data.github_url ?? null,
+    linkedin_url: data.linkedin_url ?? null,
+    website_url: data.website_url ?? null,
+  };
+  return s;
+}
+
 export async function fetchSiteContent(): Promise<SiteContent> {
-  const [experiences, educations, projects, certifications] = await Promise.all([
+  const [experiences, educations, projects, certifications, settings] = await Promise.all([
     fetchExperiences().catch(() => []),
     fetchEducations().catch(() => []),
     fetchProjects().catch(() => []),
     fetchCertifications().catch(() => []),
+    fetchSettings().catch(() => null),
   ]);
-  return { experiences, educations, projects, certifications };
+  return { experiences, educations, projects, certifications, settings };
 }
 
