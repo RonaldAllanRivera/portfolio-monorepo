@@ -1,4 +1,4 @@
-import { fetchAppearance } from '@/lib/api';
+import { getAppearance } from '@/lib/api';
 import { fetchSiteContent } from '@/lib/api';
 import { resolveTemplate } from '@/templates/registry';
 import type { Appearance } from '@/types/appearance';
@@ -29,7 +29,7 @@ export default async function Page({ params, searchParams }: { params: Promise<P
   const [p, sp, appearance, contentRaw]: [Params, SearchParams, Appearance, Awaited<ReturnType<typeof fetchSiteContent>>] = await Promise.all([
     params,
     searchParams,
-    fetchAppearance(),
+    getAppearance(),
     fetchSiteContent(),
   ]);
   const content = {

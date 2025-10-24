@@ -1,6 +1,6 @@
 import type { ReactNode, CSSProperties } from 'react';
 import './globals.css';
-import { fetchAppearance } from '@/lib/api';
+import { getAppearance } from '@/lib/api';
 
 export const metadata = {
   title: 'Portfolio',
@@ -8,7 +8,7 @@ export const metadata = {
 };
 
 export default async function RootLayout({ children }: { children: ReactNode }) {
-  const appearance = await fetchAppearance().catch(() => null);
+  const appearance = await getAppearance().catch(() => null);
   let style: (CSSProperties & Record<string, string>) | undefined;
   if (appearance) {
     style = {

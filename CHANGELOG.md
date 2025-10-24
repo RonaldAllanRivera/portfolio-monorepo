@@ -1,3 +1,13 @@
+## [0.8.3] - 2025-10-24
+### Changed
+- Next.js: deduplicated Appearance API calls by introducing a cached `getAppearance()` wrapper around `fetchAppearance()` using React `cache()`.
+- Next.js: reduced noisy dev logs for Appearance fetch; now warns once on failure in development and falls back to defaults.
+- Updated all call sites to use `getAppearance()` (`app/layout.tsx`, `app/(site)/layout.tsx`, `app/(site)/page.tsx`, `app/(site)/[section]/page.tsx`).
+
+### Documentation
+- README: added guidance for local development to use `NEXT_PUBLIC_API_BASE_URL=http://admin.allanwebdesign.com.2025.test:8000` when running `php artisan serve` instead of Laragon vhost.
+- README: troubleshooting note for 404s on `/api/v1/appearance` and how to fix via `:8000` port or Apache vhost.
+
 ## [0.8.2] - 2025-10-22
 ### Added
 - SEO-friendly section routes in Next.js public app:

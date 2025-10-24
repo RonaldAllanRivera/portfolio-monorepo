@@ -1,7 +1,8 @@
 import type { Appearance, TemplateMeta } from '@/types/appearance';
 import type { Experience, Education, Project, Certification, SiteContent } from '@/types/content';
+import { cache } from 'react';
 
-const API_BASE = process.env.NEXT_PUBLIC_API_BASE_URL || 'http://admin.allanwebdesign.com.2025.test';
+const API_BASE = String(process.env.NEXT_PUBLIC_API_BASE_URL || '');
 
 export const revalidate = 60; // seconds
 
@@ -18,10 +19,12 @@ const DEFAULT_APPEARANCE: Appearance = {
   },
 };
 
+const isDev = process.env.NODE_ENV !== 'production';
+let warnedAppearanceOnce = false;
+
 export async function fetchAppearance(signal?: AbortSignal): Promise<Appearance> {
   try {
     const url = `${API_BASE.replace(/\/$/, '')}/api/v1/appearance`;
-    console.log(`Fetching appearance from: ${url}`);
     
     const res = await fetch(url, { 
       next: { revalidate },
@@ -32,7 +35,10 @@ export async function fetchAppearance(signal?: AbortSignal): Promise<Appearance>
     });
     
     if (!res.ok) {
-      console.warn(`Appearance API returned ${res.status} ${res.statusText} for ${url}`);
+      if (isDev && !warnedAppearanceOnce) {
+        console.warn(`Appearance API returned ${res.status} ${res.statusText} for ${url}`);
+        warnedAppearanceOnce = true;
+      }
       return DEFAULT_APPEARANCE;
     }
     
@@ -53,10 +59,16 @@ export async function fetchAppearance(signal?: AbortSignal): Promise<Appearance>
       }
     };
   } catch (error) {
-    console.error('Error fetching appearance:', error);
+    if (isDev && !warnedAppearanceOnce) {
+      console.error('Error fetching appearance:', error);
+      warnedAppearanceOnce = true;
+    }
     return DEFAULT_APPEARANCE;
   }
 }
+
+// Ensure single fetch per request/render by memoizing the server call
+export const getAppearance = cache(() => fetchAppearance());
 
 export async function fetchTemplates(signal?: AbortSignal): Promise<TemplateMeta[]> {
   const url = `${API_BASE.replace(/\/$/, '')}/api/v1/templates`;

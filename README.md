@@ -1,3 +1,11 @@
+#### Local API base URL note
+
+- If you run the admin with `php artisan serve` (port 8000), point Next.js to that port:
+  ```
+  NEXT_PUBLIC_API_BASE_URL=http://admin.allanwebdesign.com.2025.test:8000
+  ```
+  Or use `http://127.0.0.1:8000` during dev. If you use Laragon’s Apache vhost on port 80, the `:8000` suffix is not needed.
+
 # Allan Web Design – Portfolio Platform
 
 A modern, API‑driven portfolio platform built as a monorepo. The admin app (Laravel 12 + Filament 4) serves as a headless CMS powering a Next.js public site, with clean REST endpoints and a streamlined content workflow.

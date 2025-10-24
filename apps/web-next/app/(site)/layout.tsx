@@ -1,10 +1,10 @@
 import type { ReactNode } from 'react';
 import type { Metadata } from 'next';
-import { fetchAppearance } from '@/lib/api';
+import { getAppearance } from '@/lib/api';
 
 export async function generateMetadata(): Promise<Metadata> {
   try {
-    const appearance = await fetchAppearance();
+    const appearance = await getAppearance();
     const title = appearance.seo_meta?.title ?? 'Portfolio';
     const description = appearance.seo_meta?.description ?? 'Public portfolio site';
     const ogImages = appearance.seo_meta?.image_url
