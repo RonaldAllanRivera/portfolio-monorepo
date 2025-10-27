@@ -1,19 +1,83 @@
 import type { Certification } from '@/types/content';
 
 export function iconNameForCertification(c: Certification): string {
-  const issuerName = typeof c?.issuer === 'string' ? c.issuer : (c as any)?.issuer?.name ?? '';
-  const name = `${(c?.name ?? '').toString().toLowerCase()} ${issuerName.toString().toLowerCase()}`;
-  if (/linkedin|learning/.test(name)) return 'mdi:linkedin';
-  if (/aws|amazon web services/.test(name)) return 'simple-icons:amazonaws';
-  if (/microsoft|azure/.test(name)) return 'simple-icons:microsoft';
-  if (/google cloud|google\b/.test(name)) return 'simple-icons:googlecloud';
-  if (/udemy/.test(name)) return 'simple-icons:udemy';
-  if (/nvidia/.test(name)) return 'simple-icons:nvidia';
-  if (/github/.test(name)) return 'mdi:github';
-  if (/kubernetes/.test(name)) return 'simple-icons:kubernetes';
-  if (/docker/.test(name)) return 'simple-icons:docker';
-  if (/react|next\.js|nextjs/.test(name)) return 'simple-icons:react';
-  if (/wordpress/.test(name)) return 'simple-icons:wordpress';
-  if (/ai|machine learning|ml/.test(name)) return 'mdi:robot-happy-outline';
+  const s = ((c?.name ?? '') as string).toLowerCase();
+
+  const rules: Array<[RegExp, string]> = [
+    [/react(\.js)?|react native/, 'simple-icons:react'],
+    [/next(\.js)?|nextjs/, 'simple-icons:nextdotjs'],
+    [/vue(\.js)?/, 'simple-icons:vuedotjs'],
+    [/angular/, 'simple-icons:angular'],
+    [/tailwind\s*css|tailwindcss/, 'simple-icons:tailwindcss'],
+    [/bootstrap/, 'simple-icons:bootstrap'],
+    [/material\s*ui|mui\b/, 'simple-icons:mui'],
+    [/typescript|ts\b/, 'simple-icons:typescript'],
+    [/javascript|es6\+?/, 'simple-icons:javascript'],
+    [/php\b/, 'simple-icons:php'],
+    [/laravel/, 'simple-icons:laravel'],
+    [/symfony/, 'simple-icons:symfony'],
+    [/codeigniter/, 'simple-icons:codeigniter'],
+    [/node(\.js)?|nodejs/, 'simple-icons:nodedotjs'],
+    [/express(\.js)?/, 'simple-icons:express'],
+    [/nestjs|nest\b/, 'simple-icons:nestjs'],
+    [/python\b/, 'simple-icons:python'],
+    [/django/, 'simple-icons:django'],
+    [/flask/, 'simple-icons:flask'],
+    [/ruby on rails|rails\b/, 'simple-icons:rubyonrails'],
+    [/graphql/, 'simple-icons:graphql'],
+    [/rest\b|api\b/, 'mdi:api'],
+    [/mysql/, 'simple-icons:mysql'],
+    [/postgres|postgresql/, 'simple-icons:postgresql'],
+    [/mariadb/, 'simple-icons:mariadb'],
+    [/sqlite/, 'simple-icons:sqlite'],
+    [/mongodb/, 'simple-icons:mongodb'],
+    [/firebase/, 'simple-icons:firebase'],
+    [/redis/, 'simple-icons:redis'],
+    [/apache\b/, 'simple-icons:apache'],
+    [/nginx/, 'simple-icons:nginx'],
+    [/docker/, 'simple-icons:docker'],
+    [/kubernetes|k8s/, 'simple-icons:kubernetes'],
+    [/aws|amazon\s+web\s+services/, 'simple-icons:amazonaws'],
+    [/google\s+cloud|gcp\b/, 'simple-icons:googlecloud'],
+    [/azure|microsoft\s+azure/, 'simple-icons:microsoftazure'],
+    [/github\s*actions/, 'simple-icons:githubactions'],
+    [/jenkins/, 'simple-icons:jenkins'],
+    [/git\b/, 'simple-icons:git'],
+    [/bash|shell\s*scripting/, 'simple-icons:gnubash'],
+    [/composer\b/, 'simple-icons:composer'],
+    [/npm\b/, 'simple-icons:npm'],
+    [/yarn\b/, 'simple-icons:yarn'],
+    [/webpack/, 'simple-icons:webpack'],
+    [/vite\b/, 'simple-icons:vite'],
+    [/parcel\b/, 'simple-icons:parcel'],
+    [/postman|insomnia/, 'simple-icons:postman'],
+    [/cypress/, 'simple-icons:cypress'],
+    [/jest/, 'simple-icons:jest'],
+    [/mocha/, 'simple-icons:mocha'],
+    [/wordpress/, 'simple-icons:wordpress'],
+    [/shopify/, 'simple-icons:shopify'],
+    [/woocommerce/, 'simple-icons:woocommerce'],
+    [/drupal/, 'simple-icons:drupal'],
+    [/magento/, 'simple-icons:magento'],
+    [/strapi/, 'simple-icons:strapi'],
+    [/contentful/, 'simple-icons:contentful'],
+    [/cloudflare/, 'simple-icons:cloudflare'],
+    [/akamai/, 'simple-icons:akamai'],
+    [/figma/, 'simple-icons:figma'],
+    [/photoshop/, 'simple-icons:adobephotoshop'],
+    [/illustrator/, 'simple-icons:adobeillustrator'],
+    [/flutter/, 'simple-icons:flutter'],
+    [/pwa\b|progressive\s+web\s+apps?/, 'simple-icons:pwa'],
+    [/websockets?/, 'mdi:web'],
+    [/jira/, 'simple-icons:jira'],
+    [/trello/, 'simple-icons:trello'],
+    [/asana/, 'simple-icons:asana'],
+    [/agile|scrum|kanban/, 'mdi:view-kanban'],
+    [/linkedin/, 'mdi:linkedin'],
+  ];
+
+  for (const [re, icon] of rules) {
+    if (re.test(s)) return icon;
+  }
   return 'mdi:certificate-outline';
 }

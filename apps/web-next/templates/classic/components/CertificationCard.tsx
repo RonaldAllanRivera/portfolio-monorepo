@@ -2,7 +2,7 @@
 import React from 'react';
 import { Icon } from '@iconify/react';
 import type { Certification } from '@/types/content';
-import { iconNameForCertification } from '@/lib/certifications-icons';
+import { iconNameForCertification } from '@/templates/shared/certifications-icons';
 import { textOf } from '@/lib/present';
 
 export default function CertificationCard({ c, onOpen }: { c: Certification; onOpen: (c: Certification) => void }) {

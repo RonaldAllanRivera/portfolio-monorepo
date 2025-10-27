@@ -3,7 +3,7 @@ import React, { useEffect, useRef } from 'react';
 import Image from 'next/image';
 import type { Certification } from '@/types/content';
 import { Icon } from '@iconify/react';
-import { iconNameForCertification } from '@/lib/certifications-icons';
+import { iconNameForCertification } from '@/templates/shared/certifications-icons';
 import { textOf, urlOf } from '@/lib/present';
 
 export default function CertificationModal({

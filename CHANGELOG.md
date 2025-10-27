@@ -9,6 +9,10 @@
 ### Changed
 - Next.js: Wire Classic template to render the new Netflix-style Certifications view on `/certifications`.
 - Types: Extended `Certification` type to include issuer object, duration, skills, and media.
+- Next.js: Certification icons now mapped by certification title keywords (React, Next.js, Laravel, Docker, Kubernetes, AWS, WordPress, etc.).
+
+### Fixed
+- Next.js: Rail arrows now hide correctly at the start/end of the Certifications carousel.
 
 ### Removed
 - Laravel: Dropped legacy column `certifications.skill` (skills are modeled via pivot `certification_skill`).
