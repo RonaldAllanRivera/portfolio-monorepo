@@ -152,20 +152,11 @@ class CertificationResource extends Resource
 
                         Forms\Components\Select::make('duration_minutes')
                             ->label('Minutes')
-                            ->options([
-                                '0' => '0',
-                                '5' => '5',
-                                '10' => '10',
-                                '15' => '15',
-                                '20' => '20',
-                                '25' => '25',
-                                '30' => '30',
-                                '35' => '35',
-                                '40' => '40',
-                                '45' => '45',
-                                '50' => '50',
-                                '55' => '55',
-                            ])
+                            ->options(function () {
+                                $opts = [];
+                                for ($i = 0; $i < 60; $i++) { $opts[(string)$i] = (string)$i; }
+                                return $opts;
+                            })
                             ->native(false)
                             ->live()
                             ->afterStateHydrated(function (Get $get, Set $set, $state) {
@@ -263,6 +254,29 @@ class CertificationResource extends Resource
                     ->date('M d, Y')
                     ->placeholder('—')
                     ->sortable(),
+
+                Tables\Columns\TextColumn::make('complete')
+                    ->label('Complete')
+                    ->state(function ($record) {
+                        $hasSkills = method_exists($record, 'skills') ? $record->skills()->exists() : false;
+                        $media = $record->media ?? [];
+                        $hasMedia = is_array($media) && count(array_filter($media)) > 0;
+
+                        $checks = [
+                            filled($record->name ?? null),
+                            filled($record->organization_id ?? null),
+                            filled($record->issue_date ?? null),
+                            filled($record->credential_id ?? null),
+                            filled($record->credential_url ?? null),
+                            filled($record->total_minutes ?? null) && ($record->total_minutes ?? 0) > 0,
+                            $hasSkills,
+                            $hasMedia,
+                        ];
+                        return collect($checks)->every(fn ($v) => $v) ? 'Complete' : '—';
+                    })
+                    ->badge()
+                    ->color(fn (string $state): string => $state === 'Complete' ? 'success' : 'gray')
+                    ->sortable(false),
 
                 Tables\Columns\TextColumn::make('sort_order')
                     ->label('Order')
