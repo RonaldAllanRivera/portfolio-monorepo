@@ -1,3 +1,17 @@
+## [0.8.5] - 2025-10-27
+### Added
+- Certifications: added `total_minutes` column to store course duration in minutes.
+- New `CertificationsEmbeddedSeeder` with pre-processed LinkedIn Learning certifications data.
+- Original CSV data file for reference: `Extracted_Certifications__Reviewed_.csv`.
+
+### Changed
+- Updated `Certification` model and Filament resource to handle `total_minutes`.
+- Modified `DatabaseSeeder` to use the new embedded seeder instead of the default one.
+- Improved certification data handling with proper CSV parsing for multiline fields.
+
+### Removed
+- Removed skills handling from certification seeding process.
+
 ## [0.8.4] - 2025-10-24
 ### Added
 - Next.js: new About section component `apps/web-next/templates/classic/components/About.tsx`.

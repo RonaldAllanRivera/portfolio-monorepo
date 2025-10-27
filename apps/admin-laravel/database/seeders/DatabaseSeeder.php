@@ -21,7 +21,7 @@ class DatabaseSeeder extends Seeder
         // Seed curated skills grouped by categories
         $this->call(SkillSeeder::class);
 
-        // Seed LinkedIn Learning certifications parsed from CSV into code
-        $this->call(CertificationSeeder::class);
+        // Seed certifications from embedded reviewed CSV
+        $this->call(CertificationsEmbeddedSeeder::class);
     }
 }

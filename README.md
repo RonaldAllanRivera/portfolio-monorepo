@@ -238,6 +238,22 @@ Media storage (local/dev and Hostinger): uses Laravel `public` disk.
   - Layouts via `Filament\Schemas\Components\Fieldset` (Filament 4).
   - Actions via `Filament\Actions` (`EditAction`, `DeleteAction`, `BulkActionGroup`).
   - Drag-and-drop reordering on `sort_order`.
+
+## Certifications Module (Admin)
+
+- **Location**: `apps/admin-laravel/app/Filament/Resources/CertificationResource.php`
+- **Features**:
+  - Tracks professional certifications with `name`, `issuer`, `issue_date`, `credential_id`, and `total_minutes`
+  - Embedded data seeder for LinkedIn Learning certifications
+  - Clean, sortable list view with search and filters
+- **Data Seeding**:
+  - Uses `CertificationsEmbeddedSeeder` with pre-processed CSV data
+  - Automatically creates organizations from issuers
+  - Computes `total_minutes` from hours and minutes
+  - Safe for non-production environments (cleans existing data)
+- **Dependencies**:
+  - Requires `organization_id` relation to `organizations` table
+  - Uses `sort_order` for manual sorting
   - Boolean icon for current study; optional grade column.
 - **Data model**: `App\Models\Education` with many‑to‑many `skills` (pivot `education_skill`), JSON `media`, scopes (`current`, `ordered`), and `user` relation.
 - **API**: `routes/api.php` + `App\Http\Controllers\Api\EducationController`

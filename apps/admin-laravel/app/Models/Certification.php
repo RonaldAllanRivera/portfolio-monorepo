@@ -20,6 +20,7 @@ class Certification extends Model
         'expiration_date',
         'credential_id',
         'credential_url',
+        'total_minutes',
         'media',
         'sort_order',
     ];
@@ -28,6 +29,7 @@ class Certification extends Model
         'issue_date' => 'date',
         'expiration_date' => 'date',
         'media' => 'array',
+        'total_minutes' => 'integer',
         'sort_order' => 'integer',
     ];
 

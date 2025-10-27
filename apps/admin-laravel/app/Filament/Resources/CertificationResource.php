@@ -16,6 +16,7 @@ use BackedEnum;
 use UnitEnum;
 use Illuminate\Support\HtmlString;
 use Filament\Schemas\Components\Utilities\Get;
+use Filament\Schemas\Components\Utilities\Set;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 use Closure;
@@ -122,6 +123,64 @@ class CertificationResource extends Resource
                             ])
                             ->columnSpanFull(),
                     ]),
+
+                Fieldset::make('Total Duration')
+                    ->schema([
+                        Forms\Components\Hidden::make('total_minutes')
+                            ->dehydrated(),
+
+                        Forms\Components\Select::make('duration_hours')
+                            ->label('Hours')
+                            ->options(function () {
+                                $opts = [];
+                                for ($i = 0; $i <= 100; $i++) { $opts[(string)$i] = (string)$i; }
+                                return $opts;
+                            })
+                            ->native(false)
+                            ->live()
+                            ->afterStateHydrated(function (Get $get, Set $set, $state) {
+                                $total = (int) ($get('total_minutes') ?? 0);
+                                $set('duration_hours', (string) intdiv($total, 60));
+                            })
+                            ->dehydrated(false)
+                            ->afterStateUpdated(function (Get $get, Set $set) {
+                                $h = (int) ($get('duration_hours') ?? 0);
+                                $m = (int) ($get('duration_minutes') ?? 0);
+                                $set('total_minutes', ($h * 60) + $m);
+                            })
+                            ->helperText('Total training hours'),
+
+                        Forms\Components\Select::make('duration_minutes')
+                            ->label('Minutes')
+                            ->options([
+                                '0' => '0',
+                                '5' => '5',
+                                '10' => '10',
+                                '15' => '15',
+                                '20' => '20',
+                                '25' => '25',
+                                '30' => '30',
+                                '35' => '35',
+                                '40' => '40',
+                                '45' => '45',
+                                '50' => '50',
+                                '55' => '55',
+                            ])
+                            ->native(false)
+                            ->live()
+                            ->afterStateHydrated(function (Get $get, Set $set, $state) {
+                                $total = (int) ($get('total_minutes') ?? 0);
+                                $set('duration_minutes', (string) ($total % 60));
+                            })
+                            ->dehydrated(false)
+                            ->afterStateUpdated(function (Get $get, Set $set) {
+                                $h = (int) ($get('duration_hours') ?? 0);
+                                $m = (int) ($get('duration_minutes') ?? 0);
+                                $set('total_minutes', ($h * 60) + $m);
+                            })
+                            ->helperText('Additional minutes'),
+                    ])
+                    ->columns(2),
 
                 Fieldset::make('Media')
                     ->schema([
