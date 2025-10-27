@@ -53,6 +53,11 @@ class Certification extends Model
      */
     public function skills(): BelongsToMany
     {
-        return $this->belongsToMany(Skill::class)->withTimestamps();
+        return $this->belongsToMany(
+            Skill::class,
+            'certification_skill',
+            'certification_id',
+            'skill_id'
+        )->withTimestamps();
     }
 }

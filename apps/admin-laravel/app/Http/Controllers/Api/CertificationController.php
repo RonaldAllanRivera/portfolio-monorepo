@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\Certification;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\DB;
 
 class CertificationController extends Controller
 {
@@ -14,10 +15,12 @@ class CertificationController extends Controller
      */
     public function index(): JsonResponse
     {
-        $items = Certification::with(['user:id,name', 'organization:id,name,website', 'skills:id,name'])
+        $rows = Certification::with(['user:id,name', 'organization:id,name,website'])
             ->ordered()
-            ->get()
-            ->map(fn ($c) => $this->formatCertification($c));
+            ->get();
+
+        $skillsMap = $this->loadSkillsMap($rows->pluck('id')->all());
+        $items = $rows->map(fn ($c) => $this->formatCertification($c, $skillsMap));
 
         return response()->json([
             'success' => true,
@@ -30,7 +33,7 @@ class CertificationController extends Controller
      */
     public function show(int $id): JsonResponse
     {
-        $cert = Certification::with(['user:id,name', 'organization:id,name,website', 'skills:id,name'])->find($id);
+        $cert = Certification::with(['user:id,name', 'organization:id,name,website'])->find($id);
 
         if (! $cert) {
             return response()->json([
@@ -39,9 +42,10 @@ class CertificationController extends Controller
             ], 404);
         }
 
+        $skillsMap = $this->loadSkillsMap([$cert->id]);
         return response()->json([
             'success' => true,
-            'data' => $this->formatCertification($cert),
+            'data' => $this->formatCertification($cert, $skillsMap),
         ]);
     }
 
@@ -52,14 +56,16 @@ class CertificationController extends Controller
     {
         $today = now()->startOfDay();
 
-        $items = Certification::with(['user:id,name', 'organization:id,name,website', 'skills:id,name'])
+        $rows = Certification::with(['user:id,name', 'organization:id,name,website'])
             ->where(function ($q) use ($today) {
                 $q->whereNull('expiration_date')
                   ->orWhereDate('expiration_date', '>=', $today);
             })
             ->ordered()
-            ->get()
-            ->map(fn ($c) => $this->formatCertification($c));
+            ->get();
+
+        $skillsMap = $this->loadSkillsMap($rows->pluck('id')->all());
+        $items = $rows->map(fn ($c) => $this->formatCertification($c, $skillsMap));
 
         return response()->json([
             'success' => true,
@@ -70,9 +76,15 @@ class CertificationController extends Controller
     /**
      * Normalize a certification for API responses.
      */
-    private function formatCertification(Certification $c): array
+    private function formatCertification(Certification $c, ?array $skillsMap = null): array
     {
         $isExpired = $c->expiration_date !== null && $c->expiration_date->isBefore(now()->startOfDay());
+        $totalMinutes = (int) ($c->total_minutes ?? 0);
+        $hours = intdiv($totalMinutes, 60);
+        $minutes = $totalMinutes % 60;
+        $durationLabel = $totalMinutes > 0
+            ? trim(($hours ? $hours . 'h' : '') . ' ' . ($minutes ? $minutes . 'm' : ''))
+            : null;
 
         return [
             'id' => $c->id,
@@ -90,12 +102,56 @@ class CertificationController extends Controller
             'is_valid' => ! $isExpired,
             'credential_id' => $c->credential_id,
             'credential_url' => $c->credential_url,
-            'skills' => $c->skills?->pluck('name')->values() ?? [],
+            'total_minutes' => $totalMinutes ?: null,
+            'duration' => [
+                'hours' => $totalMinutes ? $hours : null,
+                'minutes' => $totalMinutes ? $minutes : null,
+                'label' => $durationLabel,
+            ],
+            // Return skills from the pivot relation (joined table)
+            'skills' => $this->skillsFor($c->id, $skillsMap, namesOnly: true),
+            'skills_full' => $this->skillsFor($c->id, $skillsMap, namesOnly: false),
             'media' => $this->formatMedia($c->media),
             'sort_order' => $c->sort_order,
             'created_at' => $c->created_at?->toIso8601String(),
             'updated_at' => $c->updated_at?->toIso8601String(),
         ];
+    }
+
+    /**
+     * Build a map of certification_id => [skills...], using explicit joins.
+     */
+    private function loadSkillsMap(array $certIds): array
+    {
+        if (empty($certIds)) return [];
+        $rows = DB::table('certification_skill as cs')
+            ->join('skills as s', 's.id', '=', 'cs.skill_id')
+            ->whereIn('cs.certification_id', $certIds)
+            ->orderBy('s.sort_order')
+            ->orderBy('s.name')
+            ->get(['cs.certification_id', 's.id', 's.name', 's.category']);
+
+        $map = [];
+        foreach ($rows as $r) {
+            $map[$r->certification_id][] = [
+                'id' => $r->id,
+                'name' => $r->name,
+                'category' => $r->category,
+            ];
+        }
+        return $map;
+    }
+
+    /**
+     * Helper to pull either names or full objects for a certification id.
+     */
+    private function skillsFor(int $certId, ?array $skillsMap, bool $namesOnly): array
+    {
+        $list = $skillsMap[$certId] ?? [];
+        if ($namesOnly) {
+            return collect($list)->pluck('name')->filter()->values()->all();
+        }
+        return array_values($list);
     }
 
     /**

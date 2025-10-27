@@ -28,6 +28,22 @@ This document outlines the strategy and implementation details for the public-fa
   - Filter by category/issuer
   - Issue/expiry dates
 
+#### Netflix-style Modal View Plan (Frontend)
+- **Architecture**: Reuse current template system; render in Classic template first under section key `cf`.
+- **Data**: Use existing `/api/v1/certifications` endpoint; include `duration` (hours/minutes/label), `total_minutes`, `skills[]`, `media[]`.
+- **Icons**: Map title/issuer to Iconify icons.
+- **Components (client)**:
+  - `CertificationCard`: clickable tile with Iconify logo and title overlay.
+  - `CertificationsRail`: horizontal scrollable rail with snap, arrow controls.
+  - `CertificationModal`: full-screen Tailwind modal showing all certification details.
+  - `CertificationsNetflix` (container): manages open/close state for modal.
+- **Steps**:
+  1) Add `@iconify/react` to `apps/web-next`.
+  2) Create `templates/shared/certifications-icons.ts` icon mapping utility.
+  3) Build the three client components + container.
+  4) Wire Classic template to render `CertificationsNetflix` instead of `CertificationsList` when `sec='cf'`.
+  5) Test on `/certifications` and iterate styling to match Netflix look-and-feel.
+
 ### 4. About (`/about`)
 - **Sections**:
   - Professional bio

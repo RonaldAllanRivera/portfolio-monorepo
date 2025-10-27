@@ -8,6 +8,7 @@ import ExperienceList from './components/ExperienceList';
 import EducationList from './components/EducationList';
 import ProjectsGrid from './components/ProjectsGrid';
 import CertificationsList from './components/CertificationsList';
+import CertificationsNetflix from './components/CertificationsNetflix';
 import About from './components/About';
 
 export default function Classic({ appearance, content, ui }: { appearance: Appearance; content: SiteContent; ui?: { q?: string | null; sec?: string | null } }) {
@@ -69,7 +70,9 @@ export default function Classic({ appearance, content, ui }: { appearance: Appea
       {sections.pr ? <ProjectsGrid items={projects} /> : null}
 
       {/* Certifications */}
-      {sections.cf ? <CertificationsList items={certifications} /> : null}
+      {sections.cf ? (
+        <CertificationsNetflix items={certifications} />
+      ) : null}
     </main>
   );
 }

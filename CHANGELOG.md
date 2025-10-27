@@ -1,3 +1,22 @@
+## [0.8.6] - 2025-10-27
+### Added
+- Public API: Certifications now include `total_minutes` and `duration` object `{ hours, minutes, label }`.
+- Public API: Certifications now return joined skills via pivot with `skills` (names) and `skills_full` (id, name, category).
+- Next.js: Classic template Netflix-style Certifications UI (rail + modal) using Tailwind and Iconify.
+- Next.js: New components `CertificationCard`, `CertificationsRail`, `CertificationModal`, and container `CertificationsNetflix`.
+- Next.js: Icon mapping helper to derive issuer/title icons.
+
+### Changed
+- Next.js: Wire Classic template to render the new Netflix-style Certifications view on `/certifications`.
+- Types: Extended `Certification` type to include issuer object, duration, skills, and media.
+
+### Removed
+- Laravel: Dropped legacy column `certifications.skill` (skills are modeled via pivot `certification_skill`).
+
+### Docs
+- PUBLICPAGES_PLAN updated with Netflix-style plan and steps.
+- README updated with frontend certifications behavior and API notes.
+
 ## [0.8.5] - 2025-10-27
 ### Added
 - Certifications: added `total_minutes` column to store course duration in minutes.

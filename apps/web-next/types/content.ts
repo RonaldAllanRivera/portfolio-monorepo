@@ -37,12 +37,16 @@ export type Project = {
 export type Certification = {
   id?: number | string;
   name?: string;
-  issuer?: string | null;
+  issuer?: string | { id?: number | string; name?: string; website?: string | null } | null;
   issue_date?: string | null;
   expiry_date?: string | null;
   credential_id?: string | null;
   credential_url?: string | null;
   image_url?: string | null;
+  total_minutes?: number | null;
+  duration?: { hours?: number | null; minutes?: number | null; label?: string | null } | null;
+  skills?: string[];
+  media?: { path?: string; url?: string; full_url?: string }[];
 };
 
 export type Setting = {
